@@ -1,6 +1,80 @@
 <html>
 
 <script>
+
+/* In this dictionary we list what links we have in the menu */
+/* The utility menus are NOT part of this populating         */
+var links = [
+  // Main website interface
+  {'name': 'www',
+   'url': window.location.protocol + '//' + window.location.hostname + ':80/default.html',
+   'caption': 'By <b>Taiten Peng <i>(@Taitenpeng)</i></b><br><i>Master Linux plumber</i>',
+   'image': 'web.svg'},
+
+   // Diego's demo with Sensors
+   {'name': 'sensors',
+    'url': window.location.protocol + '//' + window.location.hostname + ':1880/ui',
+    'caption': 'By <b>Diego Bruno <i>(@dbruno74)</i></b><br><i>Master Linux plumber</i>',
+    'image': 'node.svg'},
+
+    // Automotive mp4 video
+    {'name': 'auto',
+     'url': window.location.protocol + '//' + window.location.hostname + ':80/auto_video.html',
+     'caption': '',
+     'image': 'car.svg'}
+
+];
+
+// The current URL that is displayed
+var currentURL = links[0]['url'];
+
+// This function is called during the initial populating of the menu
+function getLinkHTMLEntry(index)
+{
+  var myString = '<td valign="top" align="left">' +
+    '<center><br><a href=\"' + links[index]['url'] +
+    '\" onclick=\"writeTitle(\'' + links[index]['caption'] +
+    '\');updateCurrentURL(\'' + links[index]['url'] + '\');\" target="main"><img src=\"' + links[index]['image'] +
+    '\" height=\"40\" width=\"40\" border=\"0\"><br>' + links[index]['name'] +
+    '</a></center></td><td width="5%">&nbsp;</td>' ;
+  return myString;
+}
+
+// Simple function to update the URL displayed in the main window
+// It would be simpler to just read the src value from the iframe,
+// however if you are on another domain (which you are if you go from one port
+// to the next) you cannot do this
+function updateCurrentURL(value)
+{
+  currentURL = value;
+}
+
+// This causes the page to rotate between different demonstration
+var timeToRotation = 36000 // Time in miliseconds between rotations
+var rotationFlag = false; // Flag that tracks if we are rotating or not
+function rotateDemos()
+{
+  // If the demos were rotating, shut it down
+  if (rotationFlag){
+    rotationFlag = false;
+    return;
+  }
+  rotationFlag = true;
+  var currentDemo = 0; // Based on the global var links
+  setInterval(() => {
+    if (!rotationFlag) return;
+      // Update the demo being shown
+      document.getElementsByName("main")[0].src = links[currentDemo]['url'];
+      writeTitle(links[currentDemo]['title']);
+      currentDemo++;
+      if (currentDemo >= links.length) currentDemo = 0;
+  }, timeToRotation);
+}
+
+/* This function ensures that whenever we move the mouse the menu will be displayed */
+/* When the mouse moves, the pointer events are being reestablished for 5 seconds,  */
+/* which enables the user to click in the iframe. After 5 seconds, the pointer      */
+/* are disabled again, and moving the mouse repeats the cycle                       */
 var timeout_stack = 0;
 function mouseMove()
 {
@@ -19,9 +93,11 @@ function mouseMove()
     // We may have overriden the pointer events to be able to click
     document.getElementsByName("main")[0].style.pointerEvents="none";
     //$('iframe').css('pointer-events', 'none');
-  }, 5000);
+  }, 5000); // 5 secs delay here
 }
 
+/* This function displays or hides the platform icons, titles or URL divs */
+/* depending on whether they were displaying or not                       */
 function toggleDiv(id)
 {
   if (document.getElementById(id).style.visibility == 'visible')
@@ -29,6 +105,8 @@ function toggleDiv(id)
   else document.getElementById(id).style.visibility = 'visible';
 }
 
+// This simple function updates the text within the title div
+// This occurs each time we move laterally between demos
 function writeTitle(text){
   //alert(text);
   document.getElementById('plumber').innerHTML = text;
@@ -121,57 +199,44 @@ div.title {
 </style>
 
 <body height="100%" width="100%"><div class="overlay" onmousemove="mouseMove()">
-  <iframe src="default.html" title="Default" name="main" height="100%" width="100%" border=0 frameBorder=0></iframe>
+  <script language="Javascript">
+  document.write('<iframe src="' + links[0]['url'] + '" title="Default" name="main" height="100%" width="100%" border=0 frameBorder=0></iframe>');
+  currentURL = links[0]['url'];
+  </script>
 </div>
 
 <div class="logo" id="ubuntu">
 <center>
-<img src="/core_white-orange_st_hex.svg" height="150" width="212">
+<img src="/core_white-orange_st_hex.svg" height="150" width="212" border="0">
 <br>
 <img src="/Arm_logo_2017.svg" height="30" width="100">
 </center>
 </div>
 
 <div class="title" id="plumber">
-By <b>Taiten Peng <i>(@Taitenpeng)</i></b><br><i>Master Linux plumber</i>
+<script language="Javascript">
+document.write(links[0]['title']);
+</script>
 </div>
 
 <div class="nav" id="navigation">
   <table border=0 bgcolor="black" width="100%" height="200">
     <tr>
       <td valign="top" align="left">
+        <a href="#" onclick="alert(currentURL);">
         <img src="/core_white-orange_st_hex.svg" height="100" width="141">
+        </a>
       </td>
-      <td valign="top" align="left">
-        <center><br>
-        <a href="/default.html" onclick="javascript:event.target.port=80; javascript:writeTitle('By <b>Taiten Peng <i>(@Taitenpeng)</i></b><br><i>Master Linux plumber</i>')" target="main">
-          <img src="web.svg" height="40" width="40" border="0"><br>
-          www </a></center>
-      </td>
-      <td width="5%">
-        &nbsp;
-      </td>
-      <td valign="top">
-        <center><br>
-          <script language="JavaScript">
-            document.write('<a href=\"' + window.location.protocol + '//' + window.location.hostname + ':1880/ui\" target=\"main\" onclick=\"javascript:writeTitle(\'By <b>Diego Bruno <i>(@dbruno74)</i></b><br><i>Master Linux plumber</i>\')\">');
-          </script>
-          <img src="/node.svg" height="40" width="40" border="0"><br>
-           Sensors demo</a></center>
-      </td>
-      <td width="5%">
-        &nbsp;
-      </td>
-      <td valign="top">
-        <center><br>
-        <a href="/auto_video.html" onclick="javascript:event.target.port=80;javascript:writeTitle('')" target="main">
-          <img src="/car.svg" height="40" width="40" border="0"><br>
-           Auto video </a></center>
-      </td>
+      <script language="Javascript">
+        for (var i=0; i < links.length; i++)
+           document.write(getLinkHTMLEntry(i));
+      </script>
+
       <td width="30%">
         &nbsp;
       </td>
       <td valign="top">
+        <font size="7">
         <table border="0">
           <tr>
             <td>&nbsp;</td>
@@ -182,7 +247,11 @@ By <b>Taiten Peng <i>(@Taitenpeng)</i></b><br><i>Master Linux plumber</i>
           <tr>
             <td><div class="button" onclick="toggleDiv('ubuntu');">Logo</div></td>
           </tr>
+          <tr>
+            <td><div class="button" onclick="rotateDemos();">Rotate</div></td>
+          </tr>
         </table>
+        </font>
       </td>
 
    </tr>
