@@ -1,0 +1,193 @@
+<html>
+
+<script>
+var timeout_stack = 0;
+function mouseMove()
+{
+  // It is necessary to reenable pointers events, otherwise we cannot click anywhere
+  // in the iframe
+  document.getElementsByName("main")[0].style.pointerEvents="auto";
+  timeout_stack += 1;
+  document.getElementById("navigation").style.visibility="visible";
+  setTimeout(() => {
+    timeout_stack -= 1;
+    if (timeout_stack == 0)
+    {
+      const box = document.getElementById('navigation');
+      box.style.visibility = 'hidden';
+    }
+    // We may have overriden the pointer events to be able to click
+    document.getElementsByName("main")[0].style.pointerEvents="none";
+    //$('iframe').css('pointer-events', 'none');
+  }, 5000);
+}
+
+function toggleDiv(id)
+{
+  if (document.getElementById(id).style.visibility == 'visible')
+    document.getElementById(id).style.visibility = 'hidden';
+  else document.getElementById(id).style.visibility = 'visible';
+}
+
+function writeTitle(text){
+  //alert(text);
+  document.getElementById('plumber').innerHTML = text;
+}
+
+</script>
+
+<link rel="stylesheet" href="stylesheet.css" type="text/css" charset="utf-8"/>
+
+<style>
+body, html {
+    min-height: 100%;
+    min-width: 100%;
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
+}
+
+iframe {
+    min-height: 100%;
+    min-width: 100%;
+    padding: 0px;
+    border: none;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    /* Necessary for mousemove to be effective on iframe */
+    /* This will get suspended for 5 secs to give users the chance to click in
+       the iframe */
+    pointer-events: none;
+}
+
+a {
+  font-weight: normal;
+  font-size: 24;
+}
+
+a:link {
+  color: white;
+  text-decoration: none;
+}
+
+a:visited {
+  color: white;
+  text-decoration: none;
+}
+
+div.button{
+  font-weight: normal;
+  font-size: 24;
+  color: white;
+}
+
+body {
+  background-color: black;
+  overflow: hidden;
+  font-family: 'ubunturegular';
+}
+
+div.nav {
+  z-index: 10;
+  position: relative;
+  min-height: 10%;
+  min-width: 100%;
+  margin-top: -10%;
+  visibility: hidden;
+}
+
+div.logo {
+  z-index: 10;
+  position: fixed;
+  top: 0;
+  right: -10;
+  visibility: hidden;
+  opacity: 0.50;
+}
+
+div.title {
+  z-index: 12;
+  position: fixed;
+  top: 200;
+  right: 25;
+  visibility: hidden;
+  opacity: 0.50;
+  background-color: #FFFFFF;
+  text-align: center;
+  padding: 5;
+}
+
+</style>
+
+<body height="100%" width="100%"><div class="overlay" onmousemove="mouseMove()">
+  <iframe src="default.html" title="Default" name="main" height="100%" width="100%" border=0 frameBorder=0></iframe>
+</div>
+
+<div class="logo" id="ubuntu">
+<center>
+<img src="/core_white-orange_st_hex.svg" height="150" width="212">
+<br>
+<img src="/Arm_logo_2017.svg" height="30" width="100">
+</center>
+</div>
+
+<div class="title" id="plumber">
+By <b>Taiten Peng <i>(@Taitenpeng)</i></b><br><i>Master Linux plumber</i>
+</div>
+
+<div class="nav" id="navigation">
+  <table border=0 bgcolor="black" width="100%" height="200">
+    <tr>
+      <td valign="top" align="left">
+        <img src="/core_white-orange_st_hex.svg" height="100" width="141">
+      </td>
+      <td valign="top" align="left">
+        <center><br>
+        <a href="/default.html" onclick="javascript:event.target.port=80; javascript:writeTitle('By <b>Taiten Peng <i>(@Taitenpeng)</i></b><br><i>Master Linux plumber</i>')" target="main">
+          <img src="web.svg" height="40" width="40" border="0"><br>
+          www </a></center>
+      </td>
+      <td width="5%">
+        &nbsp;
+      </td>
+      <td valign="top">
+        <center><br>
+          <script language="JavaScript">
+            document.write('<a href=\"' + window.location.protocol + '//' + window.location.hostname + ':1880/ui\" target=\"main\" onclick=\"javascript:writeTitle(\'By <b>Diego Bruno <i>(@dbruno74)</i></b><br><i>Master Linux plumber</i>\')\">');
+          </script>
+          <img src="/node.svg" height="40" width="40" border="0"><br>
+           Sensors demo</a></center>
+      </td>
+      <td width="5%">
+        &nbsp;
+      </td>
+      <td valign="top">
+        <center><br>
+        <a href="/auto_video.html" onclick="javascript:event.target.port=80;javascript:writeTitle('')" target="main">
+          <img src="/car.svg" height="40" width="40" border="0"><br>
+           Auto video </a></center>
+      </td>
+      <td width="30%">
+        &nbsp;
+      </td>
+      <td valign="top">
+        <table border="0">
+          <tr>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <td><div class="button" onclick="toggleDiv('plumber')">Captions</div></td>
+          </tr>
+          <tr>
+            <td><div class="button" onclick="toggleDiv('ubuntu');">Logo</div></td>
+          </tr>
+        </table>
+      </td>
+
+   </tr>
+  </table>
+</div>
+
+</body>
+</html>
