@@ -21,19 +21,19 @@ var links = [
 
    // Diego's demo with Sensors
    {'name': 'sensors',
-    'url': window.location.protocol + '//' + window.location.hostname + ':1880/ui',
+    'url': window.location.protocol + '//' + window.location.hostname + ':7880/ui',
     'caption': 'By <b>Diego Bruno <i>(@dbruno74)</i></b><br><i>Master Linux plumber</i>',
     'image': 'node.svg'},
 
     // Automotive mp4 video
     {'name': 'auto',
-     'url': window.location.protocol + '//' + window.location.hostname + ':80/auto_video.html',
+     'url': window.location.protocol + '//' + window.location.hostname + ':4000',
      'caption': 'By <b>Bugra Aydogar <i>(@bugraaydogar)</i></b><br><i>Master Linux plumber</i>',
      'image': 'car.svg'},
 
      // Automotive video
      {'name': 'video',
-      'url': window.location.protocol + '//' + window.location.hostname + ':80/auto_video.html',
+      'url': window.location.protocol + '//' + window.location.hostname + '/auto_video.html',
       'caption': '',
       'image': 'video.png'}
 
@@ -217,7 +217,7 @@ div.logo {
 }
 
 div.title {
-  bottom:0;
+  bottom: 0;
   position:fixed;
   z-index:10;
   _position:absolute;
@@ -230,6 +230,7 @@ div.title {
   background-color: #000000;
   text-align: center;
   padding: 5;
+  color: white;
 }
 
 </style>

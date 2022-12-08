@@ -6,22 +6,34 @@
 /* The utility menus are NOT part of this populating         */
 var links = [
   // Main website interface
-  {'name': 'www',
+  {'name': 'Ubuntu',
    'url': window.location.protocol + '//' + window.location.hostname + ':80/default.html',
    'caption': 'By <b>Taiten Peng <i>(@Taitenpeng)</i></b><br><i>Master Linux plumber</i>',
    'image': 'web.svg'},
 
+   // Ogra's demo with camera
+   {'name': 'camera',
+    'url': window.location.protocol + '//' + window.location.hostname + ':6063',
+    'caption': 'By <b>Oliver Grawert<i>(@ogra)</i></b><br><i>Master Linux plumber</i>',
+    'image': 'camera1.svg'},
+
    // Diego's demo with Sensors
    {'name': 'sensors',
-    'url': window.location.protocol + '//' + window.location.hostname + ':1880/ui',
+    'url': window.location.protocol + '//' + window.location.hostname + ':7880/ui',
     'caption': 'By <b>Diego Bruno <i>(@dbruno74)</i></b><br><i>Master Linux plumber</i>',
     'image': 'node.svg'},
 
-    // Automotive mp4 video
+    // Automotive demo
     {'name': 'auto',
-     'url': window.location.protocol + '//' + window.location.hostname + ':80/auto_video.html',
+     'url': window.location.protocol + '//' + window.location.hostname + ':4000',
      'caption': '',
-     'image': 'car.svg'}
+     'image': 'car.svg'},
+
+    // Automotive video
+    {'name': 'video',
+     'url': window.location.protocol + '//' + window.location.hostname + ':80/auto_video.php',
+     'caption': '',
+     'image': 'video.png'}
 
 ];
 
@@ -209,13 +221,13 @@ div.title {
 <center>
 <img src="/core_white-orange_st_hex.svg" height="150" width="212" border="0">
 <br>
-<img src="/Arm_logo_2017.svg" height="30" width="100">
+<img src="/intel.png" height="30" width="100">
 </center>
 </div>
 
 <div class="title" id="plumber">
 <script language="Javascript">
-document.write(links[0]['title']);
+document.write(links[0]['caption']);
 </script>
 </div>
 
