@@ -245,13 +245,27 @@ div.title {
 
 <div class="logo" id="ubuntu">
 <center>
-<img src="/core_white-orange_st_hex.svg" height="150" width="212" border="0">
+<img src="/core_white-orange_st_hex.svg" width="225" border="0">
 <br>
 <!-- Select a logo based on the platform you are running on !-->
 <?php
+    // Function to check the string is ends
+    // with given substring or not
+    function endsWith($string, $endString)
+    {
+      $len = strlen($endString);
+      if ($len == 0) {
+        return true;
+      }
+      return (substr($string, -$len) === $endString);
+    }
+
+   if(endsWith(php_uname('r'), 'mtk'))
+      echo "<img src='mediatek.png' width='225'>";
+echo '<br><br>';
 $core = php_uname('m');
-if ($core == 'x86_64') echo '<img src="/intel.png" height="60" width="100">';
-if ($core == 'aarch64') echo '<img src="/Arm_logo_2017.svg" height="30" width="100">';
+if ($core == 'x86_64') echo '<img src="/intel.png" width="225">';
+if ($core == 'aarch64') echo '<img src="/Arm_logo_2017.svg" width="175">';
 echo '</b></font>';
 ?>
 

@@ -46,10 +46,35 @@ div.screen {
 <div class='screen'>
 <h2>
 <table border='0' padding='3' spacing='10'>
-  <tr><td valign='top'>OS</td><td>&nbsp;&nbsp;</td><td valign='top'><?php echo php_uname('v');?></td></tr>
-  <tr><td valign='top'>Kernel</td><td>&nbsp;&nbsp;</td><td valign='top'><?php echo php_uname('r');?></td></tr>
-  <tr><td valign='top'>Chipset</td><td>&nbsp;&nbsp;</td><td valign='top'><?php echo php_uname('m');?></td></tr>
-  <tr><td valign='top'>IP</td><td>&nbsp;&nbsp;</td><td valign='top'><?php echo $_SERVER['SERVER_ADDR'];?></td></tr>
+  <tr><td valign='top'>OS</td><td>&nbsp;&nbsp;</td><td valign='top'><?php echo php_uname('v');?></td><td></td></tr>
+  <tr><td valign='top'>Kernel</td><td>&nbsp;&nbsp;</td><td valign='top'><?php echo php_uname('r');?>
+  </td><td>
+  <?php
+    // Function to check the string is ends 
+    // with given substring or not
+    function endsWith($string, $endString)
+    {
+      $len = strlen($endString);
+      if ($len == 0) {
+        return true;
+      }
+      return (substr($string, -$len) === $endString);
+    }
+  
+   if(endsWith(php_uname('r'), 'mtk'))
+      echo "<img src='mediatek.png' height='25'>";
+  ?>
+  </td></tr>
+
+  <tr><td valign='top'>Chipset</td><td>&nbsp;&nbsp;</td><td valign='top'><?php echo php_uname('m');?>
+  </td><td>
+  <?php
+   if(endsWith(php_uname('m'), 'aarch64'))
+      echo "<img src='Arm_logo_2017.svg' height='25'>";
+  ?>
+
+  </td></tr>
+  <tr><td valign='top'>IP</td><td>&nbsp;&nbsp;</td><td valign='top'><?php echo $_SERVER['SERVER_ADDR'];?></td><td></td></tr>
 </table>
 </h2>
 </td>
