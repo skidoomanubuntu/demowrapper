@@ -53,7 +53,7 @@ function getLinkHTMLEntry(index)
 {
 
   // If the file list_snaps.txt has been created, we can verify if the snap is installed. If not, skip
-  if(snaps.length == 0 || !snaps.includes(links[index]['snap'])) {return "";} 
+  if(snaps.length != 0 && !snaps.includes(links[index]['snap'])) {return "";} 
   var myString = '<td valign="top" align="left">' +
     '<center><br><a href=\"' + links[index]['url'] +
     '\" onclick=\"writeTitle(\'' + links[index]['caption'] +
