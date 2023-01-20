@@ -3,6 +3,7 @@
 <!-- The entry in the "links" determines which demos are available on the bottom menu !-->
 <script>
 
+var snaps ="<?php if (file_exists('list_snaps.txt')) {echo shell_exec('cat list_snaps.txt');}?>";
 /* In this dictionary we list what links we have in the menu */
 /* The utility menus are NOT part of this populating         */
 var links = [
@@ -10,32 +11,37 @@ var links = [
   {'name': 'Ubuntu',
    'url': window.location.protocol + '//' + window.location.hostname + ':80/default.php',
    'caption': 'By <b>Taiten Peng <i>(@Taitenpeng)</i></b> and <b>J-C Verdié<i>(@jcverdie)</i></b><br><i>Master Linux plumbers</i>',
-   'image': 'web.svg'},
+   'image': 'web.svg', 'snap':'lighttpd'},
 
    // Ogra's demo with camera
    {'name': 'camera',
     'url': window.location.protocol + '//' + window.location.hostname + ':6063',
     'caption': 'By <b>Oliver Grawert<i>(@ogra)</i></b><br><i>Master Linux plumber</i>',
-    'image': 'camera1.svg'},
-
+    'image': 'camera1.svg', 'snap':'opencv-html-demo'},
 
    // Diego's demo with Sensors
    {'name': 'sensors',
     'url': window.location.protocol + '//' + window.location.hostname + ':7880/ui',
     'caption': 'By <b>Diego Bruno <i>(@dbruno74)</i></b><br><i>Master Linux plumber</i>',
-    'image': 'node.svg'},
+    'image': 'node.svg', 'snap':'node-red-demo'},
 
-    // Automotive mp4 video
+    // Code update demo
     {'name': 'auto',
      'url': window.location.protocol + '//' + window.location.hostname + ':4000',
      'caption': 'By <b>Bugra Aydogar <i>(@bugraaydogar)</i></b><br><i>Master Linux plumber</i>',
-     'image': 'car.svg'},
+     'image': 'car.svg', 'snap':'device-controller'},
+
+     // Matter demo
+     {'name': 'Matter',
+      'url': window.location.protocol + '//' + window.location.hostname + ':5001',
+      'caption': 'By <b>Prashant Dhumal <i>(@prashantdhumal)</i></b><br><i>Master Linux plumber</i>',
+      'image': 'matter.png', 'snap':'dht11'},
 
      // Automotive video
      {'name': 'video',
       'url': window.location.protocol + '//' + window.location.hostname + '/auto_video.html',
       'caption': '',
-      'image': 'video.png'}
+      'image': 'video.png', 'snap':''}
 
 ];
 
@@ -45,6 +51,9 @@ var currentURL = links[0]['url'];
 // This function is called during the initial populating of the menu
 function getLinkHTMLEntry(index)
 {
+
+  // If the file list_snaps.txt has been created, we can verify if the snap is installed. If not, skip
+  if(snaps.length == 0 || !snaps.includes(links[index]['snap'])) {return "";} 
   var myString = '<td valign="top" align="left">' +
     '<center><br><a href=\"' + links[index]['url'] +
     '\" onclick=\"writeTitle(\'' + links[index]['caption'] +
