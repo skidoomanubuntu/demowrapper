@@ -1,6 +1,8 @@
 <html>
-<META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
+<head><META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
 <META HTTP-EQUIV="EXPIRES" CONTENT="Mon, 22 Jul 2002 11:12:01 GMT">
+</head>
+
 <!-- The entry in the "links" determines which demos are available on the bottom menu !-->
 <script>
 
