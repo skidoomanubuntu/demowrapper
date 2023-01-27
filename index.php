@@ -17,22 +17,22 @@ var links = [
    'image': 'web.svg', 'snap':'lighttpd'},
 
    // Ogra's demo with camera
-   {'name': 'camera',
+   {'name': 'Camera',
     'url': window.location.protocol + '//' + window.location.hostname + ':6063',
     'caption': 'By <b>Oliver Grawert<i>(@ogra)</i></b><br><i>Master Linux plumber</i>',
     'image': 'camera1.svg', 'snap':'opencv-html-demo'},
 
    // Diego's demo with Sensors
-   {'name': 'sensors',
+   {'name': 'Sensors',
     'url': window.location.protocol + '//' + window.location.hostname + ':7880/ui',
     'caption': 'By <b>Diego Bruno <i>(@dbruno74)</i></b><br><i>Master Linux plumber</i>',
     'image': 'node.svg', 'snap':'node-red-demo'},
 
     // Code update demo
-    {'name': 'auto',
+    {'name': 'Update',
      'url': window.location.protocol + '//' + window.location.hostname + ':4000',
      'caption': 'By <b>Bugra Aydogar <i>(@bugraaydogar)</i></b><br><i>Master Linux plumber</i>',
-     'image': 'car.svg', 'snap':'device-controller'},
+     'image': 'update.svg', 'snap':'device-controller'},
 
      // Matter demo
      {'name': 'Matter',
@@ -41,10 +41,10 @@ var links = [
       'image': 'matter.png', 'snap':'dht11'},
 
      // Automotive video
-     {'name': 'video',
+     {'name': 'Auto',
       'url': window.location.protocol + '//' + window.location.hostname + '/auto_video.html',
       'caption': '',
-      'image': 'video.png', 'snap':''}
+      'image': 'car.svg', 'snap':''}
 
 ];
 
