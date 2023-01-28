@@ -14,37 +14,37 @@ var links = [
   {'name': 'Ubuntu',
    'url': window.location.protocol + '//' + window.location.hostname + ':80/default.php',
    'caption': 'By <b>Taiten Peng <i>(@Taitenpeng)</i></b> and <b>J-C Verdié<i>(@jcverdie)</i></b><br><i>Master Linux plumbers</i>',
-   'image': 'web.svg', 'snap':'lighttpd'},
+   'image': 'web.svg', 'logos_loc':'SW', 'caption_loc':'SE', 'snap':'lighttpd'},
 
    // Ogra's demo with camera
    {'name': 'Camera',
     'url': window.location.protocol + '//' + window.location.hostname + ':6063',
     'caption': 'By <b>Oliver Grawert<i>(@ogra)</i></b><br><i>Master Linux plumber</i>',
-    'image': 'camera1.svg', 'snap':'opencv-html-demo'},
+    'image': 'camera1.svg', 'logos_loc':'SW', 'caption_loc':'SE', 'snap':'opencv-html-demo'},
 
    // Diego's demo with Sensors
    {'name': 'Sensors',
     'url': window.location.protocol + '//' + window.location.hostname + ':7880/ui',
     'caption': 'By <b>Diego Bruno <i>(@dbruno74)</i></b><br><i>Master Linux plumber</i>',
-    'image': 'node.svg', 'snap':'node-red-demo'},
+    'image': 'node.svg', 'logos_loc':'SW', 'caption_loc':'SE', 'snap':'node-red-demo'},
 
     // Code update demo
     {'name': 'Update',
      'url': window.location.protocol + '//' + window.location.hostname + ':4000',
      'caption': 'By <b>Bugra Aydogar <i>(@bugraaydogar)</i></b><br><i>Master Linux plumber</i>',
-     'image': 'update.svg', 'snap':'device-controller'},
+     'image': 'update.svg', 'logos_loc':'SW', 'caption_loc':'SE', 'snap':'device-controller'},
 
      // Matter demo
      {'name': 'Matter',
       'url': window.location.protocol + '//' + window.location.hostname + ':5001',
       'caption': 'By <b>Prashant Dhumal <i>(@prashantdhumal)</i></b><br><i>Master Linux plumber</i>',
-      'image': 'matter.png', 'snap':'dht11'},
+      'image': 'matter.png', 'logos_loc':'SW', 'caption_loc':'SE', 'snap':'dht11'},
 
      // Automotive video
      {'name': 'Auto',
       'url': window.location.protocol + '//' + window.location.hostname + '/auto_video.html',
       'caption': '',
-      'image': 'car.svg', 'snap':''}
+      'image': 'car.svg', 'logos_loc':'NW', 'caption_loc':'NE', 'snap':''}
 
 ];
 
@@ -60,19 +60,35 @@ function getLinkHTMLEntry(index)
   var myString = '<td valign="top" align="left">' +
     '<center><br><a href=\"' + links[index]['url'] +
     '\" onclick=\"writeTitle(\'' + links[index]['caption'] +
-    '\');updateCurrentURL(\'' + links[index]['url'] + '\');\" target="main"><img src=\"' + links[index]['image'] +
+    '\');updateCurrentURL(\'' + links[index]['url'] + '\', \'' + links[index]['logos_loc'] + '\', \'' + links[index]['caption_loc'] + '\');\" target="main"><img src=\"' + links[index]['image'] +
     '\" height=\"40\" width=\"40\" border=\"0\"><br>' + links[index]['name'] +
     '</a></center></td><td width="5%">&nbsp;</td>' ;
   return myString;
 }
 
+
+// This repositions a floating div
+function repositionDiv(div, pos)
+{
+  element = document.getElementById(div);
+  // TO BE DONE - reposition the div 
+  //if (pos=='NW' || pos=='NE') element.style.top=0;
+  //if (pos=='SW' || pos=='SE') {element.style.top='expression(eval(document.documentElement.scrollTop+(document.documentElement.clientHeight-this.offsetHeight)));'; element.style.bottom=0;}
+}
+
+
 // Simple function to update the URL displayed in the main window
 // It would be simpler to just read the src value from the iframe,
 // however if you are on another domain (which you are if you go from one port
 // to the next) you cannot do this
-function updateCurrentURL(value)
+// While at it, update placement of diffs
+function updateCurrentURL(value, logos_pos, caption_pos)
 {
   currentURL = value;
+  // Reposition logos and captions
+  repositionDiv('ubuntu', logos_pos);
+
+
 }
 
 // This causes the page to rotate between different demonstration
@@ -134,7 +150,6 @@ function toggleDiv(id)
 // This simple function updates the text within the title div
 // This occurs each time we move laterally between demos
 function writeTitle(text){
-  //alert(text);
   document.getElementById('plumber').innerHTML = text;
 }
 
@@ -147,6 +162,31 @@ function toggleButton(idStr)
   else document.getElementById(idStr).style.color = 'orange'
 }
 
+// This function is called after loading and ensures the logos are sized appropriately
+function resizeLogos()
+{
+    // scaling factor: we would like the logos to be no more than 10% of the width of the screen
+    var scalingFactor = 0.1;
+
+    // Lock on to the images within our ubuntu div - these are our logos
+    imgs = document.getElementById('ubuntu').getElementsByTagName('img');
+    
+    // How large is the 2nd image compared to the screen?
+    if (imgs.length > 1)
+    {
+        var currentScaling = imgs[1].width/screen.width;
+        imgs[1].width = imgs[1].width*scalingFactor/currentScaling; 
+
+        // Apply the same scale to Core logo's height
+        imgs[0].height = imgs[0].height*scalingFactor/currentScaling;
+
+        // If you have another logo, go ahead and do the scaling on width
+        if(imgs.length > 2) imgs[2].width = imgs[2].width*scalingFactor/currentScaling;
+   
+        // resize the container div accordingly
+        document.getELementById('ubuntu').style.width = imgs[1].width + 10 + 'px';
+    }
+}
 </script>
 
 <!-- The following will include the Ubuntu fonts !-->
@@ -247,7 +287,7 @@ div.title {
 
 </style>
 
-<body height="100%" width="100%"><div class="overlay" onmousemove="mouseMove()">
+<body height="100%" width="100%" onload='resizeLogos()'><div class="overlay" onmousemove="mouseMove()">
   <!-- By default, the first demo is shown !-->
   <script language="Javascript">
   document.write('<iframe src="' + links[0]['url'] + '" title="Default" name="main" height="100%" width="100%" border=0 frameBorder=0></iframe>');
@@ -257,8 +297,6 @@ div.title {
 
 <div class="logo" id="ubuntu">
 <center>
-<img src="/core_white-orange_st_hex.svg" width="225" border="0">
-<br>
 <!-- Select a logo based on the platform you are running on !-->
 <?php
     // Function to check the string is ends
@@ -272,12 +310,14 @@ div.title {
       return (substr($string, -$len) === $endString);
     }
 
+   echo "<img src='/core_white-orange_st_hex.svg' width='113' border='0'><br>";
+
    if(endsWith(php_uname('r'), 'mtk'))
-      echo "<img src='mediatek.png' width='225'>";
+      echo "<img src='mediatek.png' width='113'>";
 echo '<br><br>';
 $core = php_uname('m');
-if ($core == 'x86_64') echo '<img src="/intel.png" width="225">';
-if ($core == 'aarch64') echo '<img src="/Arm_logo_2017.svg" width="175">';
+if ($core == 'x86_64') echo '<img src="/intel.png" width="113">';
+if ($core == 'aarch64') echo '<img src="/Arm_logo_2017.svg" width="88">';
 echo '</b></font>';
 ?>
 
