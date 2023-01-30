@@ -66,14 +66,36 @@ function getLinkHTMLEntry(index)
   return myString;
 }
 
+// This is a dirty way to do it, but assignments to top and bottom cannot always be relied on from experience
+var currentPos = "SW";
 
 // This repositions a floating div
 function repositionDiv(div, pos)
 {
+  if(currentPos == pos) return;
+  else currentPos = pos;
   element = document.getElementById(div);
-  // TO BE DONE - reposition the div 
-  //if (pos=='NW' || pos=='NE') element.style.top=0;
-  //if (pos=='SW' || pos=='SE') {element.style.top='expression(eval(document.documentElement.scrollTop+(document.documentElement.clientHeight-this.offsetHeight)));'; element.style.bottom=0;}
+  // TO BE DONE - reposition the div
+  //var oldOffsetHeight = element.offsetHeight; 
+  var oldOffsetHeight = 35;
+  imgs = element.getElementsByTagName('img');
+  if(imgs.length > 1) 
+  {
+    oldOffsetHeight += imgs[0].clientHeight;
+    oldOffsetHeight += imgs[1].clientHeight;
+  }
+  if(imgs.length > 2) oldOffsetHeight += imgs[2].clientHeight;
+
+  if ((pos=='NW' || pos=='NE'))
+  {
+     element.style.top=0;
+     element.style.bottom = element.clientHeight + oldOffsetHeight; 
+  } 
+  if ((pos=='SW' || pos=='SE'))  
+  {
+     element.style.bottom = 0;
+     element.style.top = element.clientHeight - oldOffsetHeight;
+  }
 }
 
 
@@ -256,8 +278,8 @@ div.logo {
   bottom:0;
   position:fixed;
   z-index:10;
-  _position:absolute;
-  _top:expression(eval(document.documentElement.scrollTop+
+  position:absolute;
+  top:expression(eval(document.documentElement.scrollTop+
     (document.documentElement.clientHeight-this.offsetHeight)));
 
   right: -10;
