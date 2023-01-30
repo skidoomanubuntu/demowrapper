@@ -200,13 +200,16 @@ function resizeLogos()
         imgs[1].width = imgs[1].width*scalingFactor/currentScaling; 
 
         // Apply the same scale to Core logo's height
-        imgs[0].height = imgs[0].height*scalingFactor/currentScaling;
+        // imgs[0].height = imgs[0].height*scalingFactor/currentScaling;
 
         // If you have another logo, go ahead and do the scaling on width
-        if(imgs.length > 2) imgs[2].width = imgs[2].width*scalingFactor/currentScaling;
+        if(imgs.length > 2) { imgs[2].width = imgs[2].width*scalingFactor/currentScaling; }
    
         // resize the container div accordingly
-        document.getELementById('ubuntu').style.width = imgs[1].width + 10 + 'px';
+        document.getElementById('ubuntu').style.width = imgs[1].width + 10 + 'px';
+
+        // Adjust the Ubuntu Core logo to occupy 50% of the height
+        imgs[0].width = imgs[1].width;
     }
 }
 </script>
