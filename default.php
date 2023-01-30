@@ -46,7 +46,9 @@ div.screen {
 <div class='screen'>
 <h2>
 <table border='0' padding='3' spacing='10'>
-  <tr><td valign='top'>OS</td><td>&nbsp;&nbsp;</td><td valign='top'><?php echo php_uname('v');?></td><td></td></tr>
+  <tr><td valign='top'>OS</td><td>&nbsp;&nbsp;</td><td valign='top'><?php echo php_uname('v');?></td><td>
+  <img src='core_white-orange_st_hex.svg' height='80'>
+  </td></tr>
   <tr><td valign='top'>Kernel</td><td>&nbsp;&nbsp;</td><td valign='top'><?php echo php_uname('r');?>
   </td><td>
   <?php
@@ -71,6 +73,8 @@ div.screen {
   <?php
    if(endsWith(php_uname('m'), 'aarch64'))
       echo "<img src='Arm_logo_2017.svg' height='25'>";
+   if(endsWith(php_uname('m'), 'x86_64'))
+      echo "<img src='intel.png' height='60'>";
   ?>
 
   </td></tr>
