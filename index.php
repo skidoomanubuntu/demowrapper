@@ -75,8 +75,6 @@ function repositionDiv(div, pos)
   if(currentPos == pos) return;
   else currentPos = pos;
   element = document.getElementById(div);
-  // TO BE DONE - reposition the div
-  //var oldOffsetHeight = element.offsetHeight; 
   var oldOffsetHeight = 35;
   imgs = element.getElementsByTagName('img');
   if(imgs.length > 1) 
@@ -89,7 +87,7 @@ function repositionDiv(div, pos)
   if ((pos=='NW' || pos=='NE'))
   {
      element.style.top=0;
-     element.style.bottom = element.clientHeight + oldOffsetHeight; 
+     element.style.bottom = element.clientHeight - oldOffsetHeight; 
   } 
   if ((pos=='SW' || pos=='SE'))  
   {
