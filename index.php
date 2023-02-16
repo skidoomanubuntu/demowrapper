@@ -75,6 +75,8 @@ function repositionDiv(div, pos)
   if(currentPos == pos) return;
   else currentPos = pos;
   element = document.getElementById(div);
+  // TO BE DONE - reposition the div
+  //var oldOffsetHeight = element.offsetHeight; 
   var oldOffsetHeight = 35;
   imgs = element.getElementsByTagName('img');
   if(imgs.length > 1) 
@@ -87,7 +89,7 @@ function repositionDiv(div, pos)
   if ((pos=='NW' || pos=='NE'))
   {
      element.style.top=0;
-     element.style.bottom = element.clientHeight - oldOffsetHeight; 
+     element.style.bottom = element.clientHeight + oldOffsetHeight; 
   } 
   if ((pos=='SW' || pos=='SE'))  
   {
@@ -337,6 +339,13 @@ div.title {
 
    if(endsWith(php_uname('r'), 'mtk'))
       echo "<img src='mediatek.png' width='113'>";
+   // This is a ugly hack because there is no -xlx in the name yet, so by default we will assume anything that is not 
+   // specifically detailed here AND is ARM will be Xilinx
+   else {
+      if(php_uname('m') == 'aarch64') echo '<img src="/AMD.png" width="88">';
+
+   }
+
 echo '<br><br>';
 $core = php_uname('m');
 if ($core == 'x86_64') echo '<img src="/intel.png" width="113">';
