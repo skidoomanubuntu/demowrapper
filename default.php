@@ -65,6 +65,12 @@ div.screen {
   
    if(endsWith(php_uname('r'), 'mtk'))
       echo "<img src='mediatek.png' height='25'>";
+   // This is a ugly hack because there is no -xlx in the name yet, so by default we will assume anything that is not
+   // specifically detailed here AND is ARM will be Xilinx
+   else {
+      if(php_uname('m') == 'aarch64') echo '<img src="/AMD.png" width="88">';
+
+   }
   ?>
   </td></tr>
 
