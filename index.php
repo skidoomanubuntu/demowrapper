@@ -212,6 +212,31 @@ function resizeLogos()
         imgs[0].width = imgs[1].width;
     }
 }
+
+// This gets invoked during load. In presence of a extra_link.json file, it will add demos
+// to the links variable we have
+function addDemoEntriesFromFile()
+{
+   <?php
+      if (file_exists($_SERVER['DOCUMENT_ROOT'] . 'extra_links.json'))
+      {
+          $json = file_get_contents($_SERVER['DOCUMENT_ROOT'] . 'extra_links.json');
+          $data = json_decode($json, true);
+          foreach ($data as $entry) echo 'links.push({
+              "name":"' . $entry["name"] . '",' .
+              '"url":"' . $entry["url"] . '",' .
+              '"caption":"' . $entry["caption"] . '",' .
+              '"image":"' . $entry["image"] . '",' . 
+              '"logos_loc":"' . $entry["logos_loc"] . '",' . 
+              '"caption_loc":"' . $entry["caption_loc"] . '",' . 
+              '"snap":"' . $entry["snap"] . '"' . 
+          '});'; 
+      }
+   ?>
+}
+
+// This call will add the additional demo entries from file extra_link.json
+addDemoEntriesFromFile();
 </script>
 
 <!-- The following will include the Ubuntu fonts !-->
