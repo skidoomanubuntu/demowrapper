@@ -11,13 +11,13 @@ var snaps ="<?php if (file_exists('list_snaps.txt')) {echo shell_exec('cat list_
 /* The utility menus are NOT part of this populating         */
 var links = [
   // Main website interface
-  {'name': 'Ubuntu',
+  {'name': 'Home',
    'url': window.location.protocol + '//' + window.location.hostname + ':80/default.php',
    'caption': 'By <b>Taiten Peng <i>(@Taitenpeng)</i></b> and <b>J-C Verdié<i>(@jcverdie)</i></b><br><i>Master Linux plumbers</i>',
    'image': 'web.svg', 'logos_loc':'SW', 'caption_loc':'SE', 'snap':'lighttpd'},
 
    // Ogra's demo with camera
-   {'name': 'Camera',
+   {'name': 'AI',
     'url': window.location.protocol + '//' + window.location.hostname + ':6063',
     'caption': 'By <b>Oliver Grawert<i>(@ogra)</i></b><br><i>Master Linux plumber</i>',
     'image': 'camera1.svg', 'logos_loc':'SW', 'caption_loc':'SE', 'snap':'opencv-html-demo'},
@@ -377,13 +377,6 @@ div.recognition {
 
    if(endsWith(php_uname('r'), 'mtk'))
       echo "<img src='mediatek.png' width='113'>";
-   // This is a ugly hack because there is no -xlx in the name yet, so by default we will assume anything that is not 
-   // specifically detailed here AND is ARM will be Xilinx
-   else {
-      if(php_uname('m') == 'aarch64') echo '<img src="/AMD.png" width="88">';
-
-   }
-
 echo '<br><br>';
 $core = php_uname('m');
 if ($core == 'x86_64') echo '<img src="/intel.png" width="113">';
