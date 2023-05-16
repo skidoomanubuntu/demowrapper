@@ -3,6 +3,7 @@
 <META HTTP-EQUIV="EXPIRES" CONTENT="Mon, 22 Jul 2002 11:12:01 GMT">
 </head>
 
+<?php include 'language_inc.php'?>
 <!-- The entry in the "links" determines which demos are available on the bottom menu !-->
 <script>
 
@@ -11,37 +12,37 @@ var snaps ="<?php if (file_exists('list_snaps.txt')) {echo shell_exec('cat list_
 /* The utility menus are NOT part of this populating         */
 var links = [
   // Main website interface
-  {'name': 'Home',
+  {'name': translate_direct('Home'),
    'url': window.location.protocol + '//' + window.location.hostname + ':80/default.php',
    'caption': 'By <b>Taiten Peng <i>(@Taitenpeng)</i></b> and <b>J-C Verdié<i>(@jcverdie)</i></b><br><i>Master Linux plumbers</i>',
    'image': 'web.svg', 'logos_loc':'SW', 'caption_loc':'SE', 'snap':'lighttpd'},
 
    // Ogra's demo with camera
-   {'name': 'AI',
+   {'name': translate_direct('AI'),
     'url': window.location.protocol + '//' + window.location.hostname + ':6063',
     'caption': 'By <b>Oliver Grawert<i>(@ogra)</i></b><br><i>Master Linux plumber</i>',
     'image': 'camera1.svg', 'logos_loc':'SW', 'caption_loc':'SE', 'snap':'opencv-html-demo'},
 
    // Diego's demo with Sensors
-   {'name': 'Sensors',
+   {'name': translate_direct('Sensors'),
     'url': window.location.protocol + '//' + window.location.hostname + ':7880/ui',
     'caption': 'By <b>Diego Bruno <i>(@dbruno74)</i></b><br><i>Master Linux plumber</i>',
     'image': 'node.svg', 'logos_loc':'SW', 'caption_loc':'SE', 'snap':'node-red-demo'},
 
     // Code update demo
-    {'name': 'Update',
+    {'name': translate_direct('Update'),
      'url': window.location.protocol + '//' + window.location.hostname + ':4000',
      'caption': 'By <b>Bugra Aydogar <i>(@bugraaydogar)</i></b><br><i>Master Linux plumber</i>',
      'image': 'update.svg', 'logos_loc':'SW', 'caption_loc':'SE', 'snap':'device-controller'},
 
      // Matter demo
-     {'name': 'Matter',
+     {'name': translate_direct('Matter'),
       'url': window.location.protocol + '//' + window.location.hostname + ':5001',
       'caption': 'By <b>Prashant Dhumal <i>(@prashantdhumal)</i></b><br><i>Master Linux plumber</i>',
       'image': 'matter.png', 'logos_loc':'SW', 'caption_loc':'SE', 'snap':'dht11'},
 
      // Automotive video
-     {'name': 'Auto',
+     {'name': translate_direct('Auto'),
       'url': window.location.protocol + '//' + window.location.hostname + '/auto_video.html',
       'caption': '',
       'image': 'car.svg', 'logos_loc':'NW', 'caption_loc':'NE', 'snap':''}
@@ -57,12 +58,12 @@ function getLinkHTMLEntry(index)
 
   // If the file list_snaps.txt has been created, we can verify if the snap is installed. If not, skip
   if(snaps.length != 0 && !snaps.includes(links[index]['snap'])) {return "";} 
-  var myString = '<td valign="top" align="left">' +
+  var myString = '<td valign="top" align="center" width="100">' +
     '<center><br><a href=\"' + links[index]['url'] +
     '\" onclick=\"writeTitle(\'' + links[index]['caption'] +
     '\');updateCurrentURL(\'' + links[index]['url'] + '\', \'' + links[index]['logos_loc'] + '\', \'' + links[index]['caption_loc'] + '\');\" target="main"><img src=\"' + links[index]['image'] +
     '\" height=\"40\" width=\"40\" border=\"0\"><br>' + links[index]['name'] +
-    '</a></center></td><td width="5%">&nbsp;</td>' ;
+    '</a></center></td><td width="15">&nbsp;</td>' ;
   return myString;
 }
 
@@ -413,23 +414,23 @@ document.write(links[0]['caption']);
            document.write(getLinkHTMLEntry(i));
       </script>
 
-      <td width="30%">
+      <td width="35%">
         &nbsp;
       </td>
-      <td valign="top">
+      <td valign="top" align='right'>
         <font size="7">
         <table border="0">
           <tr>
             <td>&nbsp;</td>
           </tr>
           <tr>
-            <td><div class="button" id='plumberButton' onclick="toggleDiv('plumber');toggleButton('plumberButton');">Captions</div></td>
+            <td><div class="button" id='plumberButton' onclick="toggleDiv('plumber');toggleButton('plumberButton');"><script>translate('Captions')</script></div></td>
           </tr>
           <tr>
-            <td><div class="button" id='ubuntuButton' onclick="toggleDiv('ubuntu');toggleButton('ubuntuButton');">Logo</div></td>
+            <td><div class="button" id='ubuntuButton' onclick="toggleDiv('ubuntu');toggleButton('ubuntuButton');"><script>translate('Logo')</script></div></td>
           </tr>
           <tr>
-            <td><div class="button" id='rotateButton' onclick="rotateDemos();toggleButton('rotateButton');">Rotate</div></td>
+            <td><div class="button" id='rotateButton' onclick="rotateDemos();toggleButton('rotateButton');"><script>translate('Rotate')</script></div></td>
           </tr>
         </table>
         </font>
