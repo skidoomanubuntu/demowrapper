@@ -37,7 +37,10 @@ div.screen {
   background-color: #300A24;
 }
 
-
+a:link { color: white;}
+a:active { color: orange;}
+a:visited { color: white;}
+a:hover { color: orange;}
 
 </style>
 <table border="0">
@@ -96,6 +99,7 @@ div.screen {
 <font color='#FFFFFF'>
 <h1><script>translate('Welcome to Canonical')</script></h1>
 <h3>Files under /var/snap/iotdevice-lighttpd/current/www/</h3>
+<p><h3>Versions: <a href='language_en.php' target='_top'>EN</a> | <a href='language_jp.php' target='_top'>JP</h3></p>
 </font>
 
 </font>
