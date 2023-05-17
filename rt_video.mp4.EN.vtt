@@ -1,0 +1,59 @@
+WEBVTT
+
+STYLE
+::cue {
+    background-color:rgba(0, 0, 0, 0.8);
+    color: rgb(255, 255, 255);
+    padding-bottom: 2em;
+}
+::cue(b) {
+  color: red;
+}
+::cue(.myclass) {
+    color: red;
+}
+
+1
+00:00:01.462 --> 00:00:04.880 
+So, Chris, what are we looking in here in this demo for real-time?
+
+2
+00:00:04.881 --> 00:00:12.487 
+So, actually, this is a demo that is basically showing the impact of load on the machine
+
+3
+00:00:12.487 --> 00:00:17.757 
+So we see we are actually spinning irregularly right now
+
+4
+00:00:17.758 --> 00:00:22.081 
+and it is happening because this is not a real-time demo at this point
+
+5
+00:00:22.081 --> 00:00:26.774
+The real-time features are not being used and the system is getting a lot of load
+
+6
+00:00:26.775 --> 00:00:33.573
+And that basically gets us unpredictable execution time for the thread that controls the motor
+
+7
+00:00:33.573 --> 00:00:41.234
+We are now using the real-time features, and we see the wheel spinning very regularly
+
+8
+00:00:41.235 --> 00:00:48.824
+because we are getting a predictable execution of the process that controls the servo
+
+9
+00:00:48.825 --> 00:00:51.728
+Very controlled time slices
+
+10
+00:00:51.729 --> 00:00:58.092
+So this is a feature (TSN and TCC) that we are enabling on the latest generation of our CPUS
+
+11
+00:00:58.092 --> 00:01:06.681
+We are collaborating with Canonical to bring TSN/TCC onto the real-time Ubuntu offering
+

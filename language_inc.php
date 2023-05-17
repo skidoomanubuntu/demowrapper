@@ -11,7 +11,8 @@ var table = [
 	['Auto', '自動車'],
 	['Captions', 'キャプション'],
 	['Logo', 'ロゴ'],
-	['Rotate', '回転']
+	['Rotate', '回転'],
+        ['Real-time', 'リアルタイム']
 ];
 function lookup_translation(myString, col)
 {

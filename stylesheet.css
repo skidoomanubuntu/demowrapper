@@ -4,8 +4,7 @@
 
 @font-face {
     font-family: 'ubunturegular';
-    src: url('/ubuntu-regular-webfont.woff2') format('woff2'),
-         url('/ubuntu-regular-webfont.woff') format('woff');
+    src: local('ubuntu'), url('/ubuntu-regular-webfont.woff2') format('woff2'):w;
     font-weight: normal;
     font-style: normal;
 
