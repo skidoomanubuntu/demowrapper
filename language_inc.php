@@ -3,7 +3,7 @@ var table = [
 	['OS','オペレイティングシステム'],
 	['Kernel', 'カーネル'],
 	['Chipset', 'チップセット'],
-	['IP', 'チップセット'],
+	['IP', 'アドレス'],
 	['Welcome to Canonical', 'カノニカルへようこそ'],
 	['Home', 'ホーム'],
 	['Sensors', 'センサー'],
