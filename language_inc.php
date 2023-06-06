@@ -3,7 +3,7 @@ var table = [
 	['OS','オペレイティングシステム'],
 	['Kernel', 'カーネル'],
 	['Chipset', 'チップセット'],
-	['IP', 'アドレス'],
+	['IP', 'チップセット'],
 	['Welcome to Canonical', 'カノニカルへようこそ'],
 	['Home', 'ホーム'],
 	['Sensors', 'センサー'],
@@ -12,7 +12,8 @@ var table = [
 	['Captions', 'キャプション'],
 	['Logo', 'ロゴ'],
 	['Rotate', '回転'],
-        ['Real-time', 'リアルタイム']
+        ['Real-time', 'リアルタイム'],
+        ['Core Car', 'コアカー']
 ];
 function lookup_translation(myString, col)
 {

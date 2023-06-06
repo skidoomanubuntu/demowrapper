@@ -7,7 +7,11 @@
 <!-- The entry in the "links" determines which demos are available on the bottom menu !-->
 <script>
 
+// This populates a list of snaps. The txt file was generated after the board was launched based on a REST API call.
 var snaps ="<?php if (file_exists('list_snaps.txt')) {echo shell_exec('cat list_snaps.txt');}?>";
+
+// This detects a list of boards that are available (or not) on the network
+var additional_boards=[<?php $connection=@fsockopen('core-car',5000); if(is_resource($connection)) {echo '"core-car",';}?>];
 
 // Also certain items will only show up if the video is in www
 var videos = "<?php echo implode(' ', glob('*.mp4'));?>";
@@ -45,6 +49,12 @@ var links = [
       'caption': 'By <b>Prashant Dhumal <i>(@prashantdhumal)</i></b><br><i>Master Linux plumber</i>',
       'image': 'matter.png', 'logos_loc':'SW', 'caption_loc':'SE', 'snap':'dht11'},
 
+     // Core car
+     {'name': translate_direct('Core Car'),
+      'url': window.location.protocol + '//core-car:5000',
+      'caption': 'By <b>Steve Bariault <i>(@skidooman)</i></b><br><i>MacGyvering plumber dispatcher</i>',
+      'image': 'car.svg', 'logos_loc':'NW', 'caption_loc':'NE', 'snap':'core-car'},
+
      // Automotive video
      {'name': translate_direct('Auto'),
       'url': window.location.protocol + '//' + window.location.hostname + '/auto_video.html',
@@ -68,8 +78,8 @@ function getLinkHTMLEntry(index)
 
   // If the file list_snaps.txt has been created, we can verify if the snap is installed. If not, skip
   //if(snaps.length != 0 && !snaps.includes(links[index]['snap'])) {return "";} 
-  // Also check if mp4 file exists if this is what is needed in lieu of a snap
-  if(snaps.length != 0 && !snaps.includes(links[index]['snap']) && !videos.includes(links[index]['snap'])) {return "";}
+  // Also check if mp4 file exists if this is what is needed in lieu of a snap - or another node on the network
+  if(snaps.length != 0 && !snaps.includes(links[index]['snap']) && !videos.includes(links[index]['snap']) && !additional_boards.includes(links[index]['snap'])) {return "";}
   var myString = '<td valign="top" align="center" width="100">' +
     '<center><br><a href=\"' + links[index]['url'] +
     '\" onclick=\"writeTitle(\'' + links[index]['caption'] +
