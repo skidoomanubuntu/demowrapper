@@ -410,6 +410,7 @@ div.recognition {
 echo '<br><br>';
 $core = php_uname('m');
 if ($core == 'x86_64') echo '<img src="/intel.png" width="113">';
+if ($_SERVER['SERVER_NAME'] == 'advantech') echo '<img src="/Advantech_logo.svg" with="113">';
 if ($core == 'aarch64') echo '<img src="/Arm_logo_2017.svg" width="88">';
 echo '</b></font>';
 ?>

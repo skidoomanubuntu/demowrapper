@@ -71,7 +71,7 @@ a:hover { color: orange;}
    // specifically detailed here AND is ARM will be Xilinx
    else {
       if(php_uname('m') == 'aarch64') echo '<img src="/AMD.png" width="88">';
-
+      if($_SERVER['SERVER_NAME'] == 'advantech') echo '<img src="/Advantech_logo.svg" width="88">';
    }
   ?>
   </td></tr>
@@ -86,7 +86,8 @@ a:hover { color: orange;}
   ?>
 
   </td></tr>
-  <tr><td valign='top'><script>translate('IP')</script></td><td>&nbsp;&nbsp;</td><td valign='top'><?php echo $_SERVER['SERVER_ADDR'];?></td><td></td></tr>
+  <tr><td valign='top'><script>translate('Name')</script></td><td>&nbsp;&nbsp;</td><td valign='top'><?php echo $_SERVER['SERVER_NAME'];?></td><td></td></tr>
+  <tr><td valign='top'><script>translate('IP')</script></td><td>&nbsp;&nbsp;</td><td valign='top'><?php echo $_SERVER['SERVER_ADDR']; ?></td><td></td></tr>
 </table>
 </h2>
 </td>
