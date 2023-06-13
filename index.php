@@ -8,7 +8,32 @@
 <script>
 
 // This populates a list of snaps. The txt file was generated after the board was launched based on a REST API call.
-var snaps ="<?php if (file_exists('list_snaps.txt')) {echo shell_exec('cat list_snaps.txt');}?>";
+var snaps ="<?php if (file_exists('snap_list.txt')) 
+    {$json=file_get_contents('snap_list.txt'); 
+     $json_data=json_decode($json,true);
+     //print_r($json_data);
+     foreach($json_data as $key => $value)
+     {
+        if ($key=='result')
+        {
+           $stack = array();
+           foreach($value as $entry){
+              foreach($entry as $entry_key => $entry_value)
+              {
+                 if (!in_array($entry_value, $stack)){
+                    print_r($entry_value . " ");
+                    array_push($stack, $entry_value);
+                 }
+              }
+              // print_r($entry_value.' ');
+           }
+        }
+     }
+     //$snaps=$json_data->result;
+     //echo $snaps;
+     //foreach($snaps as $snap){echo $snap->snap;}   
+     //echo shell_exec('cat list_snaps.txt');
+    }?>";
 
 // This detects a list of boards that are available (or not) on the network
 var additional_boards=[<?php $connection=@fsockopen('core-car',5000); if(is_resource($connection)) {echo '"core-car",';}?>];
