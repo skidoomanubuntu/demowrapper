@@ -315,8 +315,8 @@ iframe {
 }
 
 a {
-  font-weight: normal;
-  font-size: 24;
+  <? if (file_exists('jp')) echo 'font-weight: bold;'; else echo 'font-weight: normal;';?>
+  <? if (file_exists('jp')) echo 'font-size: 18;'; else echo 'font-size: 24;';?>
 }
 
 a:link {
@@ -330,8 +330,8 @@ a:visited {
 }
 
 div.button{
-  font-weight: normal;
-  font-size: 24;
+  <? if (file_exists('jp')) echo 'font-weight: bold;'; else echo 'font-weight: normal;';?>
+  <? if (file_exists('jp')) echo 'font-size: 18;'; else echo 'font-size: 24;';?>
   color: white;
 }
 
@@ -451,7 +451,7 @@ document.write(links[0]['caption']);
 </div>
 
 <div class="nav" id="navigation">
-  <table border=0 bgcolor="black" width="100%" height="200">
+  <table border=0 bgcolor="black" width="100%" height="225">
     <tr>
       <td valign="top" align="left">
         <a href="#" onclick="toggleDiv('fame');">
@@ -462,11 +462,10 @@ document.write(links[0]['caption']);
         for (var i=0; i < links.length; i++)
            document.write(getLinkHTMLEntry(i));
       </script>
-
-      <td width="35%">
+      <? if (file_exists('jp')) echo '<td width="10%">'; else echo '<td width="25%">';?>
         &nbsp;
       </td>
-      <td valign="top" align='right'>
+      <td width="15%" valign="top" align='right'>
         <font size="7">
         <table border="0">
           <tr>

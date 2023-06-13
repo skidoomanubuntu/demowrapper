@@ -3,6 +3,7 @@ var table = [
 	['OS','オペレイティングシステム'],
 	['Kernel', 'カーネル'],
 	['Chipset', 'チップセット'],
+        ['Name', '名前'],
 	['IP', 'チップセット'],
 	['Welcome to Canonical', 'カノニカルへようこそ'],
 	['Home', 'ホーム'],

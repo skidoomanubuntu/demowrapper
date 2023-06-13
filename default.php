@@ -33,7 +33,7 @@ body {
 div.screen {
   color: white;
   font-weight: normal;
-  font-size: 64;
+  <? if (file_exists('jp')) echo 'font-size: 48;'; else echo 'font-size: 64;';?>
   background-color: #300A24;
 }
 
@@ -71,7 +71,6 @@ a:hover { color: orange;}
    // specifically detailed here AND is ARM will be Xilinx
    else {
       if(php_uname('m') == 'aarch64') echo '<img src="/AMD.png" width="88">';
-      if($_SERVER['SERVER_NAME'] == 'advantech') echo '<img src="/Advantech_logo.svg" width="88">';
    }
   ?>
   </td></tr>
@@ -82,7 +81,10 @@ a:hover { color: orange;}
    if(endsWith(php_uname('m'), 'aarch64'))
       echo "<img src='Arm_logo_2017.svg' height='25'>";
    if(endsWith(php_uname('m'), 'x86_64'))
+   {
       echo "<img src='intel.png' width='113'>";
+      if($_SERVER['SERVER_NAME'] == 'advantech') echo '<img src="/Advantech_logo.svg" width="113">';
+   }
   ?>
 
   </td></tr>
@@ -92,7 +94,8 @@ a:hover { color: orange;}
 </h2>
 </td>
 
-<td width="40%">&nbsp;</td>
+<? if (file_exists('jp')) echo '<td width="10%">'; else echo '<td width="40%">';?>
+</td>
 
 
 
