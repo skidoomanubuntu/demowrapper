@@ -35,6 +35,7 @@
             flex: 1;
             padding:0px;
             margin: 0;
+            background-color:#111;
         }
 
         nav {
@@ -137,25 +138,7 @@
         <nav>
             <header>Core Demo</header>
             <ul>
-                <script>document.write(getLinkHTMLEntry(0));</script>
-                <li><a href="./" class="selected">
-                    <script>document.write(links[0]['image'])</script>
-                    Home</a></li>
-                <li><a href="./">
-                    <script>document.write(links[1]['image'])</script>
-                    AI</a></li> 
-                <li><a href="./">
-                    <script>document.write(links[2]['image'])</script>
-                    Sensors</a></li>
-                <li><a href="./">
-                    <script>document.write(links[3]['image'])</script>
-                    Update</a></li>
-                <li><a href="./">
-                    <script>document.write(links[4]['image'])</script>
-                    Matter</a></li>
-                <li><a href="./">
-                    <script>document.write(links[5]['image'])</script>
-                    Auto</a></li>
+                <script>document.write(populate_menus());</script>
             </ul>
             <ul class="extras">
                 <li><a href="./">
@@ -191,7 +174,7 @@
             n.addEventListener("click", function(e) {
                 document.querySelector('nav a.selected').classList.remove('selected');
                 n.classList.add('selected');
-                h1.innerText = n.innerText;
+                //h1.innerText = n.innerText;
                 e.stopPropagation();
                 e.preventDefault();
                 return false;

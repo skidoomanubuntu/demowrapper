@@ -106,22 +106,26 @@ function getLinkHTMLEntry(index)
 {
 
   // If the file list_snaps.txt has been created, we can verify if the snap is installed. If not, skip
-  //if(snaps.length != 0 && !snaps.includes(links[index]['snap'])) {return "";} 
   // Also check if mp4 file exists if this is what is needed in lieu of a snap - or another node on the network
   if(snaps.length != 0 && !snaps.includes(links[index]['snap']) && !videos.includes(links[index]['snap']) && !additional_boards.includes(links[index]['snap'])) {return "";}
-  /*var myString = '<td valign="top" align="center" width="100">' +
-    '<center><br><a href=\"' + links[index]['url'] +
-    '\" onclick=\"writeTitle(\'' + links[index]['caption'] +
-    '\');updateCurrentURL(\'' + links[index]['url'] + '\', \'' + links[index]['logos_loc'] + '\', \'' + links[index]['caption_loc']>
-    '\" height=\"40\" width=\"40\" border=\"0\"><br>' + links[index]['name'] +
-    '</a></center></td><td width="15">&nbsp;</td>' ;*/
-  var myString = '<li><a href="#" onclick=\" load_page(links[index][\'url\']);\">' + links[index]['image'] + links[index]['name'] + '</a></li>';
+  var url = links[index]['url'];
+  var myString = '<li><a href=\"#\" onclick=\" load_page(\'' + url + '\');\">' + links[index]['image'] + links[index]['name'] + '</a></li>';
   return myString;
 }
 
 
 function load_page(url) {
-     document.getElementsByTagName("main")[0].innerHTML='<object type="text/html" data="' + url +'" width="100%" height="100%" ></object>';
+     var html = '<object type="text/html" data=\"' + url +'\" width="100%" height="100%" ></object>';
+     document.getElementsByTagName("main")[0].innerHTML=html;
+}
+
+function populate_menus() {
+    var myString = '';
+    for(var i=0; i < links.length; i++){
+        myString+=getLinkHTMLEntry(i);
+        myString+="\n";
+    }
+    return myString;
 }
 
 </script>
