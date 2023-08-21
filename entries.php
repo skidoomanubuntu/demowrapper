@@ -109,7 +109,10 @@ function getLinkHTMLEntry(index)
   // Also check if mp4 file exists if this is what is needed in lieu of a snap - or another node on the network
   if(snaps.length != 0 && !snaps.includes(links[index]['snap']) && !videos.includes(links[index]['snap']) && !additional_boards.includes(links[index]['snap'])) {return "";}
   var url = links[index]['url'];
-  var myString = '<li><a href=\"#\" onclick=\" load_page(\'' + url + '\');\">' + links[index]['image'] + links[index]['name'] + '</a></li>';
+  var myString = '<li><a href=\"#\" onclick=\" load_page(\'' + url + '\');\"';
+  if(!index) myString+= ' class=\"selected\"';
+  myString += '>';
+  myString += links[index]['image'] + links[index]['name'] + '</a></li>';
   return myString;
 }
 
