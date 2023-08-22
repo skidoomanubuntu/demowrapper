@@ -1,0 +1,15 @@
+div.recognition {
+  position:fixed;
+  z-index:6;
+  visibility: hidden;
+  opacity: 0.80;
+  background-color: #FFFFFF;
+  padding: 5;
+  max-width: 40%;
+  max-height: 10%;
+  text-align: center;
+  top: 800;
+  bottom: 0;
+  left: 50%;
+  transform: translate(-50%, 0%);
+}
