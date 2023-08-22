@@ -126,6 +126,7 @@
     </style>
     <link rel="stylesheet" href="logos.css" type="text/css" charset="utf-8"/>
     <link rel="stylesheet" href="config.css" type="text/css" charset="utf-8"/>
+    <link rel="stylesheet" href="recognition.css" type="text/css" charset="utf-8"/>
 
     <!-- Scripts for translation are imported here !-->
     <?php include 'language_inc.php'?>
@@ -135,7 +136,7 @@
     <?php include 'entries.php'?>
 
 </head>
-<body>
+<body onload='initialize_language();'>
     <div>
         <nav>
             <header>Core Demo</header>
@@ -157,9 +158,6 @@
         </nav>
         <main>
         </main>
-           <script>load_page(links[0]['url']);</script>
-
-
 
     </div>
 
@@ -168,6 +166,15 @@
 
 <!-- This contains the logos we may want to put in surimpression !-->
 <?php include 'logos.php'?>
+
+
+<!-- This contains the recognitions we may want to put in surimpression !-->
+<?php include 'recognition.php'?>
+
+// Set the first page
+<script>
+   load_page(0);
+</script>
 
 
     <script>

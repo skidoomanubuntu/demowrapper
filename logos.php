@@ -33,23 +33,19 @@ echo '</b></font>';
 </center>
 </div>
 <script>
-function show_logos(status)
+function show_logos(status, index)
 {
    if (status){
-      repositionLogos();
+      repositionLogos(links[index]['logo']);
       document.getElementById('logos').style.visibility = 'visible';
-      alert('visibility' + document.getElementById('logos').style.visibility);
    }
    else document.getElementById('logos').style.visibility = 'hidden';
 }
 
 // This repositions a floating div
-function repositionLogos()
+function repositionLogos(pos)
 {
-  //if(currentPos == pos) return;
-  //else currentPos = pos;
   element = document.getElementById('logos');
-  var pos = 'SE';
   var heightOffset = 0;
   var widthOffset = 0;
   var imgs = element.getElementsByTagName('img');
@@ -59,7 +55,6 @@ function repositionLogos()
   if(imgs.length > 1) heightOffset += imgs[1].clientHeight;
   if(imgs.length > 2) heightOffset += imgs[2].clientHeight;
   heightOffset += 70;
-  alert('heightOffset' + heightOffset);
 
   // What should be the width?
   if(imgs.length > 0) widthOffset = imgs[0].clientWidth;
@@ -72,7 +67,8 @@ function repositionLogos()
   if ((pos=='NW' || pos=='NE'))
   {
      element.style.top=0;
-     element.style.bottom = element.clientHeight + heightOffset + 'px'; 
+     element.style.bottom = null;
+     //element.style.bottom = heightOffset + 'px'; 
   } 
   if ((pos=='SW' || pos=='SE'))  
   {
@@ -88,7 +84,8 @@ function repositionLogos()
   if ((pos=='NW' || pos=='SW'))
   {
     element.style.left = 0;
-    element.style.right = element.clientWidth + widthOffset + 'px';
+    element.style.right = null;
+    element.style.width = widthOffset + 'px';
   }
   /*alert('top' + element.style.top);
   alert('bottom' + element.style.bottom);
