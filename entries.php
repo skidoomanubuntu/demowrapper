@@ -7,7 +7,7 @@
    var links = [
    // Main website interface
        {'name': translate_direct('Home'),
-        'url': window.location.protocol + '//' + window.location.hostname + ':80/default.php',
+        'url': window.location.protocol + '//' + window.location.hostname + ':80/default2.php',
         'caption': 'By <b>Taiten Peng <i>(@Taitenpeng)</i></b> and <b>J-C Verdié<i>(@jcverdie)</i></b><br><i>Master Linux plumbers</i>',
         'image': '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M11.2698 4.13816L8.00004 0.868164L0.395752 8.47245L1.45641 9.53311L1.99975 8.98816L2.00004 14.9999H7.25004V9.99989H8.75004V14.9999H14L13.9998 8.98916L14.5437 9.53311L15.6043 8.47245L12.7698 5.63816L12.7699 1.97076H11.2699L11.2698 4.13816ZM3.49975 7.48816L8.00004 2.98989L12.4998 7.48916L12.5 13.4999H10.25V8.49989H5.75004V13.4999H3.50004L3.49975 7.48816Z"/></svg>',
         'logo':'SE', 'recognition':'S', 'snap':'lighttpd'
@@ -92,10 +92,6 @@ var snaps ="<?php if (file_exists('snap_list.txt'))
            }
         }
      }
-     //$snaps=$json_data->result;
-     //echo $snaps;
-     //foreach($snaps as $snap){echo $snap->snap;}   
-     //echo shell_exec('cat list_snaps.txt');
     }?>";
 
 // This detects a list of boards that are available (or not) on the network

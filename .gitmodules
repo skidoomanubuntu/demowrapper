@@ -1,0 +1,3 @@
+[submodule "iot-central-repo"]
+	path = iot-central-repo
+	url = git@github.com:skidoomanubuntu/iot-central-repo.git
