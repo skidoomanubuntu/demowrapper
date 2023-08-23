@@ -130,6 +130,8 @@ function load_page(index) {
      updateRecognition(index);
      // If config is open, close it
      closeConfig();
+     // If credits is open, close it
+     closeCredits();
      document.getElementsByTagName("main")[0].innerHTML=html;
 }
 
