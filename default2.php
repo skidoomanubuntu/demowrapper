@@ -11,7 +11,7 @@ body, html {
 
 body {
   /* The image used */
-  background-image: url('iot-central-repo/wallpaper.jpg');
+  background-image: url('wallpaper.jpg');
 
   /* Full height */
   height: 100%;
