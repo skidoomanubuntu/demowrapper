@@ -109,7 +109,7 @@ a:hover { color: orange;}
 <td>
 <div class='screen' style='max-height: 40vh; overflow: hidden;'>
 <table border='0' padding='3' spacing='10'>
-  <th style='background-color: #111;' width="100%" colspan='4'>Snaps</th>
+  <th style='background-color: #111;' width="100%" colspan='5'>Snaps</th>
   <tr><td valign='top'>
 	<div style='max-height: 37vh; overflow: visible;'>
 	<h4>
@@ -134,13 +134,13 @@ a:hover { color: orange;}
 		   error_reporting(E_ERROR | E_PARSE); 
 	           echo '<table border="0" width="100%">';
 	           for($counter = 0; $counter < count($stack)/3; $counter++) {
-	              echo '<tr><td>' . $chunks[0][$counter] . '</td>';
+	              echo '<tr><td>' . $chunks[0][$counter] . '</td>\n';
 	              try {
-			echo '<td>' . $chunks[1][$counter] . '</td>';
-	              	echo '<td>' . $chunks[2][$counter] . '</td>';
+			echo '<td>' . $chunks[1][$counter] . '</td>\n';
+	              	echo '<td>' . $chunks[2][$counter] . '</td>\n';
 		      }
                       catch (Exception $e) {}
-	              echo '</tr>';
+	              echo '</tr>\n';
 	           }
 	           echo '</table>';
 

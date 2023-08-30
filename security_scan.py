@@ -1,4 +1,6 @@
 from bs4 import BeautifulSoup
+import os, time, bz2
+import requests
 
 # This analyzes a manifest file that is OS-specific
 # For each file, file has this info: package | version | snap
@@ -59,7 +61,7 @@ def generateCVEFixMap(filename):
 	definitions = soup.find_all('definition')
 	for definition in definitions:
 		title = definition.find('title').text
-		# If you have a space in the title, then it is likely not a package name. Continue
+		# If the title doesn't start with CVE-, then it is a comment, ignore
 		if (not title.startswith('CVE-')):
 			print ('Cannot (should not) import %s as a valid package name' % definition.find('title').text)
 			continue
@@ -104,6 +106,7 @@ def generateCVEMap(filename):
 # This compares two versions, or at least attempts to do so
 def compareVersions(current, fixed):
 	# Usually, 1.6-1ubuntu0.20.04.1 - compare from left to right
+	# So first, extract the numbers. We don't care about letters.
 	def extractNumbers(version):
 		numbers = []
 		current = ''
@@ -119,109 +122,155 @@ def compareVersions(current, fixed):
 		return numbers
 	
 	# Function returns True if current is newer than fixed, False if not, and None if cannot determine
+	# The idea is to compare from left to right, which I am hoping is the way to go.
 	currentNumbers = extractNumbers(current)
 	fixedNumbers = extractNumbers(fixed)
 	
 	i = 0
 	while (i < len(currentNumbers) and i < len(fixedNumbers)):
 		if (currentNumbers[i] > fixedNumbers[i]):
+			# That means the number in the same position in the current version is higher than the
+			# version that fixes the issue. Then, it should mean the problem is fixed on the device.
 			return True
 		elif (currentNumbers[i] < fixedNumbers[i]):
+			# That means the number in the same position is lower in the current version
+			# This should mean that the flaw described in the CVE is still present on the target
 			return False
 		i += 1
 	
 	# Here, if there is a same number of numbers OR if the number of numbers in current is superior, it is True
+	# In the first case, the version of the target is the same as the one that fixes the issue
+	# In the second, the version of the target has been released later, hence the additional digit 
 	if (len(currentNumbers) >= len(fixedNumbers)):
 		return True
 
+	# Here, our algorithm failed to determine what happened, so return None
 	return None
 
-# First, load the manifest. These are PER core snap
-# In the end, we should be able to have a table like this:
-# OS | snap | version (currently) | package 
-snapDict = analyzeManifestFile('manifest.core20', 'Core20')
-
-'''print ('OS\t\tsnap\t\tversion\t\tpackage')
-for snap in snapDict:
-	print ('%s \t\t %s \t\t %s \t\t %s' % (snap['os'], snap['snap'], snap['package'], snap['version']))
-'''
-
-# Now that we have a list of packages that underpin snaps
-# create a table of all these packages in one unique map
-# Each map will ultimately point to a dictionary
-packageMap = generatePackageMap('com.ubuntu.focal.pkg.oval.xml')
-
-# This (hopefully) returns a map of CVE numbers vs versions that fix it 
-CVEFixMap = generateCVEFixMap('com.ubuntu.focal.cve.oval.xml')
-
-
-# We also need a map of CVEs to USNs to indicate when they were fixed
-CVEMap, USNMap = generateCVEMap('oci.com.ubuntu.focal.usn.oval.xml')	
-
-# By associating the snapDict to the packageMap, we can know how many CVEs are POTENTIALLY present
-for snap in snapDict:
-	if snap['snap'] in packageMap.keys():
-		snap['description'] = packageMap[snap['snap']]['description']
-		snap['current_version'] = packageMap[snap['snap']]['current_version']
-		snap['component'] = packageMap[snap['snap']]['component']
-		snap['cve'] = packageMap[snap['snap']]['cve']
-
-# We also need a way to have a CVE centric way of seeing things
-CVEWithSnapsInfo ={}
-for snap in snapDict:
-	for cve in snap['cve']:
-		if (cve['name'] in CVEWithSnapsInfo.keys()):
-			CVEWithSnapsInfo[cve['name']]['snaps'].append(snap)
+# This will update all the files we need to have to make the analysis happen
+def updateFiles(dict):
+	# Files older than 24 hours need to be reloaded from the Web site - if the Internet connection is available
+	for file in ['pkg', 'cve', 'usn']:
+		if (not os.path.isfile(dict[file]) or (time.time() - os.path.getmtime(dict[file]) > 86400)):
+			print ("Need to update file %s.bz2 from the Internet" % dict[file])
+			# Can I download it?
+			try:
+				filename = '%s.bz2' % dict[file]
+				url = 'https://security-metadata.canonical.com/oval/%s' % filename
+				response = requests.get(url)
+				print (response)
+				print ('downloaded')
+				open('%s' % dict[file], 'wb').write(bz2.decompress(response.content))
+				#bz2.decompress(b"%s.bz2" % dict[file])
+				print ("Completed")
+			except Exception as e:
+				print ("Could not fetch file %s" % dict[file])
+				print (e)
+				if (not os.path.isfile(dict[file])):
+					print ("File %s could not be retrieved, and no older copy exists. Process cannot complete" % dict[file])
+					return False
+				else:
+					print ("File %s could not be retrieved, so the analysis will use older data already present" % dict[file])
 		else:
-			CVEWithSnapsInfo.update({cve['name']:{"severity":cve['severity'], "release_date":cve['release_date'], "snaps":[snap]}})
-
-print ('CVEs present: %i' % len(CVEWithSnapsInfo.keys()))
-
+			print ("File %s is not going to be updated" % dict[file])
+	return True
 
 
-# Generate a table levels (rows) vs components (cols)
-CVEsAndAvailablePatches = {"critical":{"main":0, "universe":0, "multiverse": 0, "other":0},
-			"high":{"main":0, "universe":0, "multiverse":0, "other":0},
-			"medium":{"main":0, "universe":0, "multiverse":0, "other":0},
-			"low":{"main":0, "universe":0, "multiverse":0, "other":0}}
+# This function will get called to analyze per core snap present
+def analyzeCoreVersion(osStr, manifestFile, ovalPkgFile, ovalCveFile, ovalUsnFile):
+	# First, load the manifest. These are PER core snap
+	# In the end, we should be able to have a table like this:
+	# OS | snap | version (currently) | package 
+	snapDict = analyzeManifestFile(manifestFile, osStr)
 
-print  ('CVE \t\tOS \tsnap \tcomp \tlevel \t#pck \t#usn \tcurver \tfixed')
-print  ('---------------------------------------------------------------')
-for cve in CVEWithSnapsInfo.keys():
-	usn = '          '
-	if (cve in CVEMap.keys()):
-		usn = CVEMap[cve]
-	packNum = len(CVEWithSnapsInfo[cve]['snaps'])
-	OS = CVEWithSnapsInfo[cve]['snaps'][0]['os']
-	snap = CVEWithSnapsInfo[cve]['snaps'][0]['snap']
-	component = CVEWithSnapsInfo[cve]['snaps'][0]['component']
-	severity = CVEWithSnapsInfo[cve]['severity']
-	version = CVEWithSnapsInfo[cve]['snaps'][0]['version']
-	fixedVersion = None
-	fixed = False
-	if (cve in CVEFixMap.keys()):
-		fixedVersion = CVEFixMap[cve]
-		fixed = compareVersions(version, fixedVersion)
-	print ('%s \t%s \t%s \t%s \t%s \t%s \t%s \t%s \t%s \t%s' % 
-		(cve, OS, snap, component, severity, packNum, len(usn), fixed, version, fixedVersion))
+	'''print ('OS\t\tsnap\t\tversion\t\tpackage')
+	for snap in snapDict:
+		print ('%s \t\t %s \t\t %s \t\t %s' % (snap['os'], snap['snap'], snap['package'], snap['version']))
+	'''
+
+	# Now that we have a list of packages that underpin snaps
+	# create a table of all these packages in one unique map
+	# Each map will ultimately point to a dictionary
+	packageMap = generatePackageMap(ovalPkgFile)
+
+	# This (hopefully) returns a map of CVE numbers vs versions that fix it 
+	CVEFixMap = generateCVEFixMap(ovalCveFile)
 
 
-'''	for snap in CVEWithSnapsInfo[cve]['snaps']:
-		print ('%s \t%s \t%s \t%s \t%s \t%s(%s) \t%s' % 
-			(cve, snap['os'], snap['snap'], snap['component'], CVEWithSnapsInfo[cve]['severity'], 
-			snap['package'], snap['version'], usn))
-'''
+	# We also need a map of CVEs to USNs to indicate when they were fixed
+	CVEMap, USNMap = generateCVEMap(ovalUsnFile)	
 
-# What are all the severity levels and components present?
-components = []
-severities = []
+	# By associating the snapDict to the packageMap, we can know how many CVEs are POTENTIALLY present
+	for snap in snapDict:
+		if snap['snap'] in packageMap.keys():
+			snap['description'] = packageMap[snap['snap']]['description']
+			snap['current_version'] = packageMap[snap['snap']]['current_version']
+			snap['component'] = packageMap[snap['snap']]['component']
+			snap['cve'] = packageMap[snap['snap']]['cve']
 
-for snap in snapDict:
-	if (not snap['component'] in components):
-		components.append(snap['component'])
-	for cve in snap['cve']:
-		if (not cve['severity'] in severities):
-			severities.append(cve['severity'])
+	# We also need a way to have a CVE centric way of seeing things
+	CVEWithSnapsInfo ={}
+	for snap in snapDict:
+		for cve in snap['cve']:
+			if (cve['name'] in CVEWithSnapsInfo.keys()):
+				CVEWithSnapsInfo[cve['name']]['snaps'].append(snap)
+			else:
+				CVEWithSnapsInfo.update({cve['name']:{"severity":cve['severity'], "release_date":cve['release_date'], "snaps":[snap]}})
 
-print (components)
-print (severities)
+	print ('CVEs present: %i' % len(CVEWithSnapsInfo.keys()))
+
+
+
+	# Generate a table levels (rows) vs components (cols)
+	CVEsAndAvailablePatches = {"critical":{"main":0, "universe":0, "multiverse": 0, "other":0},
+				"high":{"main":0, "universe":0, "multiverse":0, "other":0},
+				"medium":{"main":0, "universe":0, "multiverse":0, "other":0},
+				"low":{"main":0, "universe":0, "multiverse":0, "other":0}}
+
+	print  ('CVE \t\tOS \tsnap \tcomp \tlevel \t#pck \t#usn \tcurver \tfixed')
+	print  ('---------------------------------------------------------------')
+	for cve in CVEWithSnapsInfo.keys():
+		usn = '          '
+		if (cve in CVEMap.keys()):
+			usn = CVEMap[cve]
+		packNum = len(CVEWithSnapsInfo[cve]['snaps'])
+		OS = CVEWithSnapsInfo[cve]['snaps'][0]['os']
+		snap = CVEWithSnapsInfo[cve]['snaps'][0]['snap']
+		component = CVEWithSnapsInfo[cve]['snaps'][0]['component']
+		severity = CVEWithSnapsInfo[cve]['severity']
+		version = CVEWithSnapsInfo[cve]['snaps'][0]['version']
+		fixedVersion = None
+		fixed = False
+		if (cve in CVEFixMap.keys()):
+			fixedVersion = CVEFixMap[cve]
+			fixed = compareVersions(version, fixedVersion)
+		print ('%s \t%s \t%s \t%s \t%s \t%s \t%s \t%s \t%s \t%s' % 
+			(cve, OS, snap, component, severity, packNum, len(usn), fixed, version, fixedVersion))
+
+
+	'''	for snap in CVEWithSnapsInfo[cve]['snaps']:
+			print ('%s \t%s \t%s \t%s \t%s \t%s(%s) \t%s' % 
+				(cve, snap['os'], snap['snap'], snap['component'], CVEWithSnapsInfo[cve]['severity'], 
+				snap['package'], snap['version'], usn))
+	'''
+
+	# What are all the severity levels and components present?
+	components = []
+	severities = []
+
+	for snap in snapDict:
+		if (not snap['component'] in components):
+			components.append(snap['component'])
+		for cve in snap['cve']:
+			if (not cve['severity'] in severities):
+				severities.append(cve['severity'])
+
+	print (components)
+	print (severities)
+
+dataToAnalyze = [ {"os":"Core20", "manifest":"manifest.core20", "pkg":"com.ubuntu.focal.pkg.oval.xml", "cve":"com.ubuntu.focal.cve.oval.xml", "usn": "oci.com.ubuntu.focal.usn.oval.xml"}
+]
+
+for data in dataToAnalyze:
+	if(updateFiles(data)):
+		analyzeCoreVersion(data['os'], data['manifest'], data['pkg'], data['cve'], data['usn'])
