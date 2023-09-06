@@ -58,10 +58,10 @@ def generateUSNStats(dicts, filename):
 			fixed = int(dict[key]['fixed'])
 			percentage = 0
 			try:
-				percentage = 100 * fixed/total
+				percentage = '%.1f%%' % (100 * fixed/total)
 			except ZeroDivisionError:
 				percentage = '-'
-			myString += "<td><b>%s</b> vulnerabilities<br><font color='green'><b>%s</b> fixed (<b>%s</b>)</td>" % (total, fixed, percentage)
+			myString += "<td><font color='grey'><b>%s</b></font><br>%s fixed (%s)</td>" % (total, fixed, percentage)
 		return myString
 
 	total = { 'Critical': {'fixed':0, 'present':0},
@@ -83,9 +83,11 @@ def generateUSNStats(dicts, filename):
 		total['Other']['present'] += data['Other']['present']
 
 	with open(filename, 'w') as htmlFile:
-		htmlFile.write('<table border="0" width="100%">\n')
+		htmlFile.write('<table border="0" width="100%" padding="3" spacing="10">\n')
 		htmlFile.write('   <tr>\n')
-		htmlFile.write('      <th>Source</th><th>Critical</th><th>High</th><th>Low</th><th>Other</th>\n')
+		htmlFile.write("       <th style='background-color: #111;' width='100%' colspan='6'><h2>USN on the system & fixes</h2></th>\n")
+		htmlFile.write('   </tr><tr>\n')
+		htmlFile.write('      <th>Source</th><th>Critical</th><th>High</th><th>Medium</th><th>Low</th><th>Other</th>\n')
 		htmlFile.write('   </tr><tr>\n')
 		htmlFile.write('      <td><b>Total</b></td>%s\n' % printResultLine(total))
 		htmlFile.write('   </tr>\n')

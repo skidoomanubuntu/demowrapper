@@ -175,6 +175,9 @@ def updateFiles(dict):
 			print ("File %s is not going to be updated" % dict[file])
 	return True
 
+# This regenerates manifest files from Eduardo's script
+#def updateManifestFiles(dict):
+	
 
 # This function will get called to analyze per core snap present
 def analyzeCoreVersion(osStr, manifestFile, ovalPkgFile, ovalCveFile, ovalUsnFile):
@@ -183,10 +186,10 @@ def analyzeCoreVersion(osStr, manifestFile, ovalPkgFile, ovalCveFile, ovalUsnFil
 	# OS | snap | version (currently) | package 
 	snapDict = analyzeManifestFile(manifestFile, osStr)
 
-	'''print ('OS\t\tsnap\t\tversion\t\tpackage')
+	print ('For %s, manifest is:')
+	print ('OS\t\tsnap\t\tversion\t\tpackage')
 	for snap in snapDict:
 		print ('%s \t\t %s \t\t %s \t\t %s' % (snap['os'], snap['snap'], snap['package'], snap['version']))
-	'''
 
 	# Now that we have a list of packages that underpin snaps
 	# create a table of all these packages in one unique map
@@ -268,9 +271,13 @@ def analyzeCoreVersion(osStr, manifestFile, ovalPkgFile, ovalCveFile, ovalUsnFil
 	print (components)
 	print (severities)
 
-dataToAnalyze = [ {"os":"Core20", "manifest":"manifest.core20", "pkg":"com.ubuntu.focal.pkg.oval.xml", "cve":"com.ubuntu.focal.cve.oval.xml", "usn": "oci.com.ubuntu.focal.usn.oval.xml"}
+dataToAnalyze = [ 
+		{"os":"Core18", "manifest":"manifest.core18", "pkg":"com.ubuntu.bionic.pkg.oval.xml", "cve":"com.ubuntu.bionic.cve.oval.xml", "usn": "oci.com.ubuntu.bionic.usn.oval.xml"},
+		{"os":"Core20", "manifest":"manifest.core20", "pkg":"com.ubuntu.focal.pkg.oval.xml", "cve":"com.ubuntu.focal.cve.oval.xml", "usn": "oci.com.ubuntu.focal.usn.oval.xml"},
+		{"os":"Core22", "manifest":"manifest.core22", "pkg":"com.ubuntu.jammy.pkg.oval.xml", "cve":"com.ubuntu.jammy.cve.oval.xml", "usn": "oci.com.ubuntu.jammy.usn.oval.xml"}
 ]
 
 for data in dataToAnalyze:
-	if(updateFiles(data)):
-		analyzeCoreVersion(data['os'], data['manifest'], data['pkg'], data['cve'], data['usn'])
+	print ('analyzing %s' % data['os'])
+	if(os.path.isfile(data['manifest']) and updateFiles(data)):
+		analyzeCoreVersion(data['manifest'], data['manifest'], data['pkg'], data['cve'], data['usn'])

@@ -109,7 +109,7 @@ a:hover { color: orange;}
 <td>
 <div class='screen' style='max-height: 40vh; overflow: hidden;'>
 <table border='0' padding='3' spacing='10'>
-  <th style='background-color: #111;' width="100%" colspan='5'>Snaps</th>
+  <th style='background-color: #111;' width="100%" colspan='5'><h2>Snaps</h2></th>
   <tr><td valign='top'>
 	<div style='max-height: 37vh; overflow: visible;'>
 	<h4>
@@ -134,13 +134,13 @@ a:hover { color: orange;}
 		   error_reporting(E_ERROR | E_PARSE); 
 	           echo '<table border="0" width="100%">';
 	           for($counter = 0; $counter < count($stack)/3; $counter++) {
-	              echo '<tr><td>' . $chunks[0][$counter] . '</td>\n';
+	              echo '<tr><td>' . $chunks[0][$counter] . '</td>';
 	              try {
-			echo '<td>' . $chunks[1][$counter] . '</td>\n';
-	              	echo '<td>' . $chunks[2][$counter] . '</td>\n';
+			echo '<td>' . $chunks[1][$counter] . '</td>';
+	              	echo '<td>' . $chunks[2][$counter] . '</td>';
 		      }
                       catch (Exception $e) {}
-	              echo '</tr>\n';
+	              echo '</tr>';
 	           }
 	           echo '</table>';
 
@@ -150,10 +150,22 @@ a:hover { color: orange;}
 	</h4>
 	</div>
 </td></tr></table>
+
 </h2>
 </div>
 
-</td></tr></table>
+</td>
+<td></td>
+<td>
+
+<div class='screen' style='max-height: 40vh; overflow-y: auto; overflow-x: hidden;'>
+<?php
+  if (file_exists('usn_stats.php')) include 'usn_stats.php'; 
+?>
+</div>
+
+</td>
+</tr></table>
 </body>
 </html>
 
