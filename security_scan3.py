@@ -140,7 +140,70 @@ def generateUSNStats(dicts, filename):
 			htmlFile.write('   </tr>\n')
 		htmlFile.write('</table>')
 
-versions = {'core18':'bionic', 'core20':'focal', 'core22':'jammy', 'snapd':'xenial', 'pc-kernel': 'jammy'}
+# This takes an OCI PCK file and returns a dictionary as follows:
+# Package -> {{usn->[cve]}, component}
+def analyzePkgFile(filename):
+	# At this point in time, the file manifest should be relative to the version we selected
+	# This file lists all packages used (last column)
+	# We need that info to limit the size of our pkgMap to what is relevant to us
+	relevantPkg = []
+	with open('manifest', 'r') as manifestFile:
+		lines = manifestFile.readlines()
+		for line in lines:
+			columns = line.replace('\n','').split(' ')
+			relevantPkg.append(columns[0])
+	print (relevantPkg)
+	pkgMap = {}
+	xmlFile = open(filename, 'r')
+	contents = xmlFile.read()
+	soup = BeautifulSoup(contents, 'xml')
+	definitions = soup.find_all('definitions')
+	for definition in definitions:
+		package = definition.find('title').text
+		if not package in relevantPkg:
+			continue
+		component = definition.find('component').text
+		usn = {}
+		for cve in definition.find_all('cve'):
+			if 'usns' in cve.attrs.keys():
+				for usnEntry in cve['usns'].replace(' ','').split(','):
+					if usnEntry in usn.keys():
+						usn[usnEntry].append(cve.text)
+					else:
+						usn[usnEntry] = [cve.text]
+
+		pkgMap[package] = {'usn':usn, 'component':component}
+
+	return pkgMap
+
+# This takes a pkg file and turns it into the following dict:
+# usn -> component
+def analyzePkgFileFromUsn(filename):	
+	pkgMap = {}
+	xmlFile = open(filename, 'r')
+	contents = xmlFile.read()
+	soup = BeautifulSoup(contents, 'xml')
+	definitions = soup.find_all('definitions')
+	for definition in definitions:
+		package = definition.find('title').text
+		component = definition.find('component').text
+		for cve in definition.find_all('cve'):
+			if 'usns' in cve.attrs.keys():
+				for usnEntry in cve['usns'].replace(' ','').split(','):
+					if usnEntry in pkgMap.keys() and pkgMap[usnEntry] != component:
+						print ('%s is affecting two components: %s, %s' % (usnEntry, pkgMap[usnEntry], component))
+					else:
+						pkgMap[usnEntry] = component
+
+	return pkgMap
+
+map = analyzePkgFileFromUsn('oci.com.ubuntu.xenial.pkg.oval.xml')
+print (map)
+#for key in map.keys():
+#	print (key)
+#print (len(map.keys()))
+
+'''versions = {'core18':'bionic', 'core20':'focal', 'core22':'jammy', 'snapd':'xenial', 'pc-kernel': 'jammy'}
 maps = {}
 results = {}
 for version in versions.keys():
@@ -164,7 +227,4 @@ for version in versions.keys():
 		break
 
 generateUSNStats(results, 'usn_stats.php')
-#print (results)
-#jammyMap = analyzeOscapOciReport('report.xml')
-#print (jammyMap)
-#generateData(jammyMap)
+'''
