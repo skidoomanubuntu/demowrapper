@@ -1,5 +1,48 @@
 from bs4 import BeautifulSoup
-import shutil, subprocess, os
+import shutil, subprocess, os, requests, bz2, time
+
+# This updates files if necessary
+def updateFiles(version):
+	def downloadFile(url, file):
+		# Can I download it?
+		try:
+			response = requests.get(url)
+			if os.path.isfile(file):
+				os.remove(file)
+			print ("file %s retrieved" % url)
+			open("%s" % file, 'wb').write(bz2.decompress(response.content))
+			if not os.path.isfile(file):
+				print ("there")
+				return False
+			return True
+		except Exception as e:
+			print ("here")
+			print (e)
+			return False
+
+
+	def getFile(filename):
+		# Is the file present?
+		if (os.path.isfile(filename)):
+			# Has it been updated within the last 24 hours?
+			if (time.time() - os.path.getmtime(filename) < 86400):
+				print ("%s exists and has been updated during last 24 hours" % filename)
+				return True
+			else:
+				if not downloadFile('https://security-metadata.canonical.com/oval/%s.bz2' % filename, filename):
+					print ("%s could not be retrieved, but there is an old copy locally, analysis will still proceed" % filename)
+		else:
+			if not downloadFile('https://security-metadata.canonical.com/oval/%s' % filename, filename):
+				print ("%s could not be retrieved, and there is no local copy, analysis will stop" % filename)
+				return False
+		return True
+				
+	# We have two files to update
+	# oci.com.ubuntu.[version].pkg.oval.xml
+	# oci.com.ubuntu.[version].usn.oval.xml
+	pkgFile = "oci.com.ubuntu.%s.pkg.oval.xml" % version
+	usnFile = "oci.com.ubuntu.%s.usn.oval.xml" % version
+	return (getFile(pkgFile) and getFile(usnFile)) 
 
 # Analyze the output from command
 # oscap oval eval --results report.xml oci.com.ubuntu.[version].usn.oval.xml
@@ -101,6 +144,11 @@ versions = {'core18':'bionic', 'core20':'focal', 'core22':'jammy', 'snapd':'xeni
 maps = {}
 results = {}
 for version in versions.keys():
+	# Ensure we have the files we need
+	if not updateFiles(versions[version]):
+		print ("Could not update files for version %s, analysis for this version will be skipped" % version)
+		continue
+
 	# First, make sure that the right manifest file gets copied as manifest
 	shutil.copy('manifest.%s' % version, 'manifest')
 
