@@ -1,506 +1,204 @@
-<html>
-<head><META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
-<META HTTP-EQUIV="EXPIRES" CONTENT="Mon, 22 Jul 2002 11:12:01 GMT">
-</head>
-
-<?php include 'language_inc.php'?>
-<!-- The entry in the "links" determines which demos are available on the bottom menu !-->
-<script>
-
-// This populates a list of snaps. The txt file was generated after the board was launched based on a REST API call.
-var snaps ="<?php if (file_exists('snap_list.txt')) 
-    {$json=file_get_contents('snap_list.txt'); 
-     $json_data=json_decode($json,true);
-     //print_r($json_data);
-     foreach($json_data as $key => $value)
-     {
-        if ($key=='result')
-        {
-           $stack = array();
-           foreach($value as $entry){
-              foreach($entry as $entry_key => $entry_value)
-              {
-                 if (!in_array($entry_value, $stack)){
-                    print_r($entry_value . " ");
-                    array_push($stack, $entry_value);
-                 }
-              }
-              // print_r($entry_value.' ');
-           }
-        }
-     }
-     //$snaps=$json_data->result;
-     //echo $snaps;
-     //foreach($snaps as $snap){echo $snap->snap;}   
-     //echo shell_exec('cat list_snaps.txt');
-    }?>";
-
-// This detects a list of boards that are available (or not) on the network
-var additional_boards=[<?php $connection=@fsockopen('core-car',5000); if(is_resource($connection)) {echo '"core-car",';}?>];
-
-// Also certain items will only show up if the video is in www
-var videos = "<?php echo implode(' ', glob('*.mp4'));?>";
-
-/* In this dictionary we list what links we have in the menu */
-/* The utility menus are NOT part of this populating         */
-var links = [
-  // Main website interface
-  {'name': translate_direct('Home'),
-   'url': window.location.protocol + '//' + window.location.hostname + ':80/default.php',
-   'caption': 'By <b>Taiten Peng <i>(@Taitenpeng)</i></b> and <b>J-C Verdié<i>(@jcverdie)</i></b><br><i>Master Linux plumbers</i>',
-   'image': 'web.svg', 'logos_loc':'SW', 'caption_loc':'SE', 'snap':'lighttpd'},
-
-   // Ogra's demo with camera
-   {'name': translate_direct('AI'),
-    'url': window.location.protocol + '//' + window.location.hostname + ':6063',
-    'caption': 'By <b>Oliver Grawert<i>(@ogra)</i></b><br><i>Master Linux plumber</i>',
-    'image': 'camera1.svg', 'logos_loc':'SW', 'caption_loc':'SE', 'snap':'opencv-html-demo'},
-
-   // Diego's demo with Sensors
-   {'name': translate_direct('Sensors'),
-    'url': window.location.protocol + '//' + window.location.hostname + ':7880/ui',
-    'caption': 'By <b>Diego Bruno <i>(@dbruno74)</i></b><br><i>Master Linux plumber</i>',
-    'image': 'node.svg', 'logos_loc':'SW', 'caption_loc':'SE', 'snap':'node-red-demo'},
-
-    // Code update demo
-    {'name': translate_direct('Update'),
-     'url': window.location.protocol + '//' + window.location.hostname + ':4000',
-     'caption': 'By <b>Bugra Aydogar <i>(@bugraaydogar)</i></b><br><i>Master Linux plumber</i>',
-     'image': 'update.svg', 'logos_loc':'SW', 'caption_loc':'SE', 'snap':'device-controller'},
-
-     // Matter demo
-     {'name': translate_direct('Matter'),
-      'url': window.location.protocol + '//' + window.location.hostname + ':5001',
-      'caption': 'By <b>Prashant Dhumal <i>(@prashantdhumal)</i></b><br><i>Master Linux plumber</i>',
-      'image': 'matter.png', 'logos_loc':'SW', 'caption_loc':'SE', 'snap':'dht11'},
-
-     // Core car
-     {'name': translate_direct('Core Car'),
-      'url': window.location.protocol + '//core-car:5000',
-      'caption': 'By <b>Steve Bariault <i>(@skidooman)</i></b><br><i>MacGyvering plumber dispatcher</i>',
-      'image': 'car.svg', 'logos_loc':'NW', 'caption_loc':'NE', 'snap':'core-car'},
-
-     // Automotive video
-     {'name': translate_direct('Auto'),
-      'url': window.location.protocol + '//' + window.location.hostname + '/auto_video.html',
-      'caption': '',
-      'image': 'car.svg', 'logos_loc':'NW', 'caption_loc':'NE', 'snap':'auto_video.mp4'},
-
-     // Real-time video
-     {'name': translate_direct('Real-time'),
-      'url': window.location.protocol + '//' + window.location.hostname + '/rt_video.php',
-      'caption': '',
-      'image': 'rt.svg', 'logos_loc':'SW', 'caption_loc':'SE', 'snap':'rt_video.mp4'}
-
-];
-
-// The current URL that is displayed
-var currentURL = links[0]['url'];
-
-// This function is called during the initial populating of the menu
-function getLinkHTMLEntry(index)
-{
-
-  // If the file list_snaps.txt has been created, we can verify if the snap is installed. If not, skip
-  //if(snaps.length != 0 && !snaps.includes(links[index]['snap'])) {return "";} 
-  // Also check if mp4 file exists if this is what is needed in lieu of a snap - or another node on the network
-  if(snaps.length != 0 && !snaps.includes(links[index]['snap']) && !videos.includes(links[index]['snap']) && !additional_boards.includes(links[index]['snap'])) {return "";}
-  var myString = '<td valign="top" align="center" width="100">' +
-    '<center><br><a href=\"' + links[index]['url'] +
-    '\" onclick=\"writeTitle(\'' + links[index]['caption'] +
-    '\');updateCurrentURL(\'' + links[index]['url'] + '\', \'' + links[index]['logos_loc'] + '\', \'' + links[index]['caption_loc'] + '\');\" target="main"><img src=\"' + links[index]['image'] +
-    '\" height=\"40\" width=\"40\" border=\"0\"><br>' + links[index]['name'] +
-    '</a></center></td><td width="15">&nbsp;</td>' ;
-  return myString;
-}
-
-// This is a dirty way to do it, but assignments to top and bottom cannot always be relied on from experience
-var currentPos = "SW";
-
-// This repositions a floating div
-function repositionDiv(div, pos)
-{
-  if(currentPos == pos) return;
-  else currentPos = pos;
-  element = document.getElementById(div);
-  // TO BE DONE - reposition the div
-  //var oldOffsetHeight = element.offsetHeight; 
-  var oldOffsetHeight = 35;
-  imgs = element.getElementsByTagName('img');
-  if(imgs.length > 1) 
-  {
-    oldOffsetHeight += imgs[0].clientHeight;
-    oldOffsetHeight += imgs[1].clientHeight;
-  }
-  if(imgs.length > 2) oldOffsetHeight += imgs[2].clientHeight;
-
-  if ((pos=='NW' || pos=='NE'))
-  {
-     element.style.top=0;
-     element.style.bottom = element.clientHeight + oldOffsetHeight; 
-  } 
-  if ((pos=='SW' || pos=='SE'))  
-  {
-     element.style.bottom = 0;
-     element.style.top = element.clientHeight - oldOffsetHeight;
-  }
-}
-
-
-// Simple function to update the URL displayed in the main window
-// It would be simpler to just read the src value from the iframe,
-// however if you are on another domain (which you are if you go from one port
-// to the next) you cannot do this
-// While at it, update placement of diffs
-function updateCurrentURL(value, logos_pos, caption_pos)
-{
-  currentURL = value;
-  // Reposition logos and captions
-  repositionDiv('ubuntu', logos_pos);
-
-
-}
-
-// This causes the page to rotate between different demonstration
-var timeToRotation = 36000 // Time in miliseconds between rotations
-var rotationFlag = false; // Flag that tracks if we are rotating or not
-function rotateDemos()
-{
-  // If the demos were rotating, shut it down
-  if (rotationFlag){
-    rotationFlag = false;
-    return;
-  }
-  rotationFlag = true;
-  var currentDemo = 0; // Based on the global var links
-  setInterval(() => {
-    if (!rotationFlag) return;
-      // Update the demo being shown
-      document.getElementsByName("main")[0].src = links[currentDemo]['url'];
-      writeTitle(links[currentDemo]['title']);
-      currentDemo++;
-      if (currentDemo >= links.length) currentDemo = 0;
-  }, timeToRotation);
-}
-
-/* This function ensures that whenever we move the mouse the menu will be displayed */
-/* When the mouse moves, the pointer events are being reestablished for 5 seconds,  */
-/* which enables the user to click in the iframe. After 5 seconds, the pointer      */
-/* are disabled again, and moving the mouse repeats the cycle                       */
-var timeout_stack = 0;
-function mouseMove()
-{
-  // It is necessary to reenable pointers events, otherwise we cannot click anywhere
-  // in the iframe
-  document.getElementsByName("main")[0].style.pointerEvents="auto";
-  timeout_stack += 1;
-  document.getElementById("navigation").style.visibility="visible";
-  setTimeout(() => {
-    timeout_stack -= 1;
-    if (timeout_stack == 0)
-    {
-      const box = document.getElementById('navigation');
-      box.style.visibility = 'hidden';
-    }
-    // We may have overriden the pointer events to be able to click
-    document.getElementsByName("main")[0].style.pointerEvents="none";
-    //$('iframe').css('pointer-events', 'none');
-  }, 5000); // 5 secs delay here
-}
-
-/* This function displays or hides the platform icons, titles or URL divs */
-/* depending on whether they were displaying or not                       */
-function toggleDiv(id)
-{
-  if (document.getElementById(id).style.visibility == 'visible')
-    document.getElementById(id).style.visibility = 'hidden';
-  else document.getElementById(id).style.visibility = 'visible';
-}
-
-// This simple function updates the text within the title div
-// This occurs each time we move laterally between demos
-function writeTitle(text){
-  document.getElementById('plumber').innerHTML = text;
-}
-
-// This script highlights the button in bright orange if the function has been selected
-// Orange means ON, White means OFF
-function toggleButton(idStr)
-{
-  if (document.getElementById(idStr).style.color == 'orange')
-     document.getElementById(idStr).style.color = 'white';
-  else document.getElementById(idStr).style.color = 'orange'
-}
-
-// This function is called after loading and ensures the logos are sized appropriately
-function resizeLogos()
-{
-    // scaling factor: we would like the logos to be no more than 10% of the width of the screen
-    var scalingFactor = 0.1;
-
-    // Lock on to the images within our ubuntu div - these are our logos
-    imgs = document.getElementById('ubuntu').getElementsByTagName('img');
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Ubuntu Core Demo</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="stylesheet.css" type="text/css" charset="utf-8"/>
     
-    // How large is the 2nd image compared to the screen?
-    if (imgs.length > 1)
-    {
-        var currentScaling = imgs[1].width/screen.width;
-        imgs[1].width = imgs[1].width*scalingFactor/currentScaling; 
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        html, body {
+            width:100%;
+            height:100%;
+            padding:0;
+            margin:0;
+            font-family: 'Ubuntu', sans-serif;
+            font-weight: 300;
+        }
 
-        // Apply the same scale to Core logo's height
-        // imgs[0].height = imgs[0].height*scalingFactor/currentScaling;
+        body > div {
+            display:flex;
+            flex-direction:row;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
 
-        // If you have another logo, go ahead and do the scaling on width
-        if(imgs.length > 2) { imgs[2].width = imgs[2].width*scalingFactor/currentScaling; }
-   
-        // resize the container div accordingly
-        document.getElementById('ubuntu').style.width = imgs[1].width + 10 + 'px';
+        h1 { 
+            font-weight: 300;
+            font-size: 56px;margin-top:4px;
+        }
 
-        // Adjust the Ubuntu Core logo to occupy 50% of the height
-        imgs[0].width = imgs[1].width;
-    }
-}
+        main {
+            flex: 1;
+            padding:0px;
+            margin: 0;
+            background-color:#111;
+        }
 
-// This gets invoked during load. In presence of a extra_link.json file, it will add demos
-// to the links variable we have
-function addDemoEntriesFromFile()
-{
-   <?php
-      if (file_exists($_SERVER['DOCUMENT_ROOT'] . 'extra_links.json'))
-      {
-          $json = file_get_contents($_SERVER['DOCUMENT_ROOT'] . 'extra_links.json');
-          $data = json_decode($json, true);
-          foreach ($data as $entry) echo 'links.push({
-              "name":"' . $entry["name"] . '",' .
-              '"url":"' . $entry["url"] . '",' .
-              '"caption":"' . $entry["caption"] . '",' .
-              '"image":"' . $entry["image"] . '",' . 
-              '"logos_loc":"' . $entry["logos_loc"] . '",' . 
-              '"caption_loc":"' . $entry["caption_loc"] . '",' . 
-              '"snap":"' . $entry["snap"] . '"' . 
-          '});'; 
-      }
-   ?>
-}
-
-// This call will add the additional demo entries from file extra_link.json
-addDemoEntriesFromFile();
-</script>
-
-<!-- The following will include the Ubuntu fonts !-->
-<link rel="stylesheet" href="stylesheet.css" type="text/css" charset="utf-8"/>
-
-<style>
-body, html {
-    font-family: ubuntu;
-    min-height: 100%;
-    min-width: 100%;
-    overflow: hidden;
-    padding: 0;
-    margin: 0;
-}
-
-iframe {
-    min-height: 100%;
-    min-width: 100%;
-    padding: 0px;
-    border: none;
-    padding: 0;
-    margin: 0;
-    overflow: hidden;
-    /* Necessary for mousemove to be effective on iframe */
-    /* This will get suspended for 5 secs to give users the chance to click in
-       the iframe */
-    pointer-events: none;
-}
-
-a {
-  <? if (file_exists('jp')) echo 'font-weight: bold;'; else echo 'font-weight: normal;';?>
-  <? if (file_exists('jp')) echo 'font-size: 18;'; else echo 'font-size: 24;';?>
-}
-
-a:link {
-  color: white;
-  text-decoration: none;
-}
-
-a:visited {
-  color: white;
-  text-decoration: none;
-}
-
-div.button{
-  <? if (file_exists('jp')) echo 'font-weight: bold;'; else echo 'font-weight: normal;';?>
-  <? if (file_exists('jp')) echo 'font-size: 18;'; else echo 'font-size: 24;';?>
-  color: white;
-}
-
-body {
-  background-color: black;
-  overflow: hidden;
-  font-family: 'ubuntulight';
-}
-
-div.nav {
-  z-index: 10;
-  position: relative;
-  min-height: 10%;
-  min-width: 100%;
-  margin-top: -10%;
-  visibility: hidden;
-  color: white;
-}
-
-div.logo {
-  bottom:0;
-  position:fixed;
-  z-index:10;
-  position:absolute;
-  top:expression(eval(document.documentElement.scrollTop+
-    (document.documentElement.clientHeight-this.offsetHeight)));
-
-  right: -10;
-  visibility: hidden;
-  opacity: 0.50;
-  background-color: #000000;
-  text-align: center;
-  padding: 5;
-}
-
-div.title {
-  bottom: 0;
-  position:fixed;
-  z-index:10;
-  _position:absolute;
-  _top:expression(eval(document.documentElement.scrollTop+
-    (document.documentElement.clientHeight-this.offsetHeight)));
-
-  left: 10;
-  visibility: hidden;
-  opacity: 0.50;
-  background-color: #000000;
-  text-align: center;
-  padding: 5;
-  color: white;
-}
-
-div.recognition {
-  position: fixed; 
-  top : 25;
-  left: 25;
-  z-index: 15;
-  visibility: hidden;
-  background-color: #FFFFFF;
-  text-align: center;
-  padding: 5;
-  color: #000000;
-}
+        nav {
+            width: 56px;
+            background-color:#111;
+            overflow:hidden;
+            height:100%;
+            color:#fff;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.2s linear;
+        }
 
 
-</style>
+        nav:hover {
+            background-color: #262626;
+            width: 240px;
+        }
 
-<body height="100%" width="100%" onload='resizeLogos()'><div class="overlay" onmousemove="mouseMove()">
-  <!-- By default, the first demo is shown !-->
-  <script language="Javascript">
-  document.write('<iframe src="' + links[0]['url'] + '" title="Default" name="main" height="100%" width="100%" border=0 frameBorder=0></iframe>');
-  currentURL = links[0]['url'];
-  </script>
-</div>
+        nav header {
+            font-size: 24px;
+            position: relative;
+            white-space: nowrap;
+            color:#363636;
+        }
+        nav:hover header {
+            color:#ffffff;
+        }
 
-<div class="logo" id="ubuntu">
-<center>
-<!-- Select a logo based on the platform you are running on !-->
-<?php
-    // Function to check the string is ends
-    // with given substring or not
-    function endsWith($string, $endString)
-    {
-      $len = strlen($endString);
-      if ($len == 0) {
-        return true;
-      }
-      return (substr($string, -$len) === $endString);
-    }
+        nav header::before {
+            content: url(./logo.svg);
+            width: 24px;
+            height: 43px;
+            margin: 0 8px 0 16px;
+        }
+        nav header::after {
+            content: 'Canonical';
+            position: absolute;
+            top:4px;
+            left:48px;
+            font-size:12px;
+        }
 
-   echo "<img src='/core_white-orange_st_hex.svg' width='113' border='0'><br>";
+        nav ul {
+            list-style: none;
+            margin: 8px 0;
+            padding:0;
+        }
+        nav ul:not(.extras) {
+            flex:1;
+        }
 
-   if(endsWith(php_uname('r'), 'mtk'))
-      echo "<img src='mediatek.png' width='113'>";
-   // This is a ugly hack because there is no -xlx in the name yet, so by default we will assume anything that is not
-   // specifically detailed here AND is ARM will be Xilinx
-   else {
-      if(php_uname('m') == 'aarch64') echo '<img src="/AMD.png" width="88">';
+        nav ul a {
+            display: block;
+            padding: 8px 16px;
+            color: #fff;
+            text-decoration: none;
+            white-space: nowrap;
+            text-indent:240px;
+        }
+        nav:hover ul a {
+            text-indent:32px;
+        }
+        nav ul a svg {
+            vertical-align: text-top;
+            margin-right:4px;
+            position:absolute;
+            left:20px;
+        }
+        nav ul a svg path {
+            fill: #ffffff;
+        }
+        nav ul a:hover {
+            background-color: #2e2e2e;
+        }
 
-   }
-echo '<br><br>';
-$core = php_uname('m');
-if ($core == 'x86_64') echo '<img src="/intel.png" width="113">';
-if ($_SERVER['SERVER_NAME'] == 'advantech') echo '<img src="/Advantech_logo.svg" with="113">';
-if ($core == 'aarch64') echo '<img src="/Arm_logo_2017.svg" width="88">';
-echo '</b></font>';
-?>
+        nav ul a.selected {
+            border-left: 4px solid #fff;
+            background-color: #373737 !important;
+            padding-left:12px;
+            cursor: default;
+        }
+        nav ul a.selected svg path {
+            fill: #A8A8A8;
+        }
 
-</center>
-</div>
+       
+    </style>
+    <link rel="stylesheet" href="logos.css" type="text/css" charset="utf-8"/>
+    <link rel="stylesheet" href="config.css" type="text/css" charset="utf-8"/>
+    <link rel="stylesheet" href="recognition.css" type="text/css" charset="utf-8"/>
+    <link rel="stylesheet" href="credits.css" type="text/css" charset="utf-8"/>
 
-<div class="title" id="plumber">
-<!-- By default, the first demo is shown !-->
-<script language="Javascript">
-document.write(links[0]['caption']);
-</script>
-</div>
+    <!-- Scripts for translation are imported here !-->
+    <?php include 'language_inc.php'?>
 
-<div class="nav" id="navigation">
-  <table border=0 bgcolor="black" width="100%" height="225">
-    <tr>
-      <td valign="top" align="left">
-        <a href="#" onclick="toggleDiv('fame');">
-        <img src="/core_white-orange_st_hex.svg" height="100" width="141">
-        </a>
-      </td>
-      <script language="Javascript">
-        for (var i=0; i < links.length; i++)
-           document.write(getLinkHTMLEntry(i));
-      </script>
-      <? if (file_exists('jp')) echo '<td width="10%">'; else echo '<td width="25%">';?>
-        &nbsp;
-      </td>
-      <td width="15%" valign="top" align='right'>
-        <font size="7">
-        <table border="0">
-          <tr>
-            <td>&nbsp;</td>
-          </tr>
-          <tr>
-            <td><div class="button" id='plumberButton' onclick="toggleDiv('plumber');toggleButton('plumberButton');"><script>translate('Captions')</script></div></td>
-          </tr>
-          <tr>
-            <td><div class="button" id='ubuntuButton' onclick="toggleDiv('ubuntu');toggleButton('ubuntuButton');"><script>translate('Logo')</script></div></td>
-          </tr>
-          <tr>
-            <td><div class="button" id='rotateButton' onclick="rotateDemos();toggleButton('rotateButton');"><script>translate('Rotate')</script></div></td>
-          </tr>
-        </table>
-        </font>
-      </td>
 
-   </tr>
-  </table>
-</div>
-<div class="recognition" id="fame">
-<h3><p>A production of <b><u>Canonical's Field Engineering IoT</u></b></p>
-<p>With valuable contributions from <b><u>Marketing</u></b> and <b><u>Product Management</u></b></p></h3>
-<h4><u>Contributors</u></h4>
+    <!-- This contains the automation that determines which menus are being displayed !-->
+    <?php include 'entries.php'?>
+
+</head>
+<body onload='initialize_language();'>
+    <div>
+        <nav>
+            <header>Core Demo</header>
+            <ul>
+                <script>document.write(populate_menus());</script>
+            </ul>
+            <ul class="extras">
+                <li><a href="#" onclick='openCredits();'>
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M16 8C16 3.58172 12.4183 0 8 0C3.58172 0 0 3.58172 0 8C0 12.4183 3.58172 16 8 16C12.4183 16 16 12.4183 16 8ZM1.5 8C1.5 4.41015 4.41015 1.5 8 1.5C11.5899 1.5 14.5 4.41015 14.5 8C14.5 11.5899 11.5899 14.5 8 14.5C4.41015 14.5 1.5 11.5899 1.5 8ZM8.75 6.99937V12.0202H7.25V6.99937H8.75ZM9 4.44477C9 4.16862 8.77614 3.94477 8.5 3.94477H7.5C7.22386 3.94477 7 4.16862 7 4.44477V5.44477C7 5.72091 7.22386 5.94477 7.5 5.94477H8.5C8.77614 5.94477 9 5.72091 9 5.44477V4.44477Z"/>
+                    </svg>
+                    About</a></li>
+                <li><a href="#" onclick='openConfig();'>
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M13.466 2.74795C12.4889 1.73131 11.2309 0.986656 9.81679 0.638826L8.5484 2.14312C8.36784 2.12643 8.18491 2.11789 7.99998 2.11789C7.81506 2.11789 7.63213 2.12643 7.45156 2.14312L6.18381 0.638672C4.76947 0.986436 3.51123 1.73116 2.53398 2.74795L3.2015 4.5971C2.99023 4.89447 2.80591 5.21233 2.6521 5.54711L0.716319 5.89296C0.523136 6.56192 0.419617 7.26891 0.419617 8.00008C0.419617 8.73129 0.523146 9.43831 0.716345 10.1073L2.6521 10.4531C2.80591 10.7878 2.99023 11.1057 3.2015 11.4031L2.53398 13.2522C3.51123 14.269 4.76947 15.0137 6.18381 15.3615L7.45156 13.857C7.63213 13.8737 7.81506 13.8823 7.99998 13.8823C8.18491 13.8823 8.36784 13.8737 8.5484 13.857L9.81679 15.3613C11.2309 15.0135 12.4889 14.2689 13.466 13.2522L12.7985 11.4031C13.0097 11.1057 13.1941 10.7878 13.3479 10.4531L15.2836 10.1073C15.4768 9.43831 15.5804 8.73129 15.5804 8.00008C15.5804 7.26891 15.4768 6.56192 15.2836 5.89296L13.3479 5.54711C13.1941 5.21233 13.0097 4.89447 12.7985 4.5971L13.466 2.74795ZM9.19026 3.70886L10.313 2.37608L10.5367 2.47218C10.8818 2.63083 11.2111 2.82162 11.5205 3.04175L11.713 3.18608L11.1211 4.82603L11.5757 5.46586L11.7267 5.69314C11.8227 5.84766 11.9089 6.00802 11.9848 6.17333L12.3122 6.88582L14.024 7.19108L14.0419 7.31121C14.0674 7.5384 14.0804 7.76825 14.0804 8.00008L14.0707 8.34627C14.0643 8.46112 14.0547 8.57538 14.0419 8.68898L14.024 8.80808L12.3122 9.11431L11.9848 9.82683L11.8633 10.071C11.7772 10.2311 11.6811 10.3859 11.5757 10.5343L11.1211 11.1741L11.713 12.8131L11.5205 12.9584C11.2111 13.1785 10.8818 13.3693 10.5367 13.528L10.313 13.6231L9.19026 12.2913L8.41031 12.3634L8.20597 12.3775L7.99998 12.3823C7.86214 12.3823 7.72529 12.376 7.58966 12.3634L6.80943 12.2913L5.68598 13.6231L5.46354 13.5281C5.11842 13.3695 4.78907 13.1787 4.47966 12.9585L4.28598 12.8131L4.87889 11.1741L4.42431 10.5343L4.27323 10.307C4.17731 10.1525 4.09108 9.99215 4.01513 9.82683L3.68777 9.11431L1.97498 8.80808L1.95807 8.68898C1.93253 8.46178 1.91962 8.23192 1.91962 8.00008L1.92926 7.65391C1.93568 7.53907 1.9453 7.42481 1.95807 7.31121L1.97498 7.19108L3.68779 6.88582L4.01513 6.17333L4.13669 5.92919C4.22278 5.76905 4.31884 5.61431 4.42431 5.46586L4.87889 4.82603L4.28598 3.18608L4.47966 3.04165C4.78907 2.8215 5.11842 2.6307 5.46354 2.47204L5.68598 2.37608L6.80943 3.70889L7.58966 3.63675L7.79399 3.62262L7.99998 3.61789C8.13782 3.61789 8.27468 3.62421 8.41031 3.63675L9.19026 3.70886ZM7.99998 5.00008C9.65684 5.00008 11 6.34323 11 8.00008C11 9.65694 9.65684 11.0001 7.99998 11.0001C6.34313 11.0001 4.99998 9.65694 4.99998 8.00008C4.99998 6.34323 6.34313 5.00008 7.99998 5.00008ZM6.49998 8.00008C6.49998 7.17165 7.17156 6.50008 7.99998 6.50008C8.82841 6.50008 9.49998 7.17165 9.49998 8.00008C9.49998 8.82851 8.82841 9.50008 7.99998 9.50008C7.17156 9.50008 6.49998 8.82851 6.49998 8.00008Z" />
+                    </svg>
+                    Settings</a></li>
+            </ul>
+        </nav>
+        <main>
+        </main>
+
+    </div>
+
+<!-- This contains the config menu !-->
+<?php include 'config.php'?>
+
+<!-- This contains the logos we may want to put in surimpression !-->
+<?php include 'logos.php'?>
+
+
+<!-- This contains the recognitions we may want to put in surimpression !-->
+<?php include 'recognition.php'?>
+
+
+<!-- This contains the recognitions we may want to put in surimpression !-->
+<?php include 'credits.php'?>
+
+// Set the first page
 <script>
-for(var j=0; j<links.length; j++)
-{
-  if(links[j]['caption'].length) document.write('<u>' + links[j]['name'] + '</u>' + ' ' + links[j]['caption'] + '<br>');
-}
+   load_page(0);
 </script>
-<p>Image generation by <b>Jean-Charles Verdié(@jcverdie)</b>, build-master of our Universe </p>
-<p>An idea and menu by <b>Steve Barriault(@skidooman)</b>, the skipper of the best crew of Linux plumbers around</p>
 
-<p>Special thanks to <b>Julie Chevrier, Nathan Hart, Felicia Jia and Bertrand Boisseau</b> 
-<p>Running on <b><u>Ubuntu Core</u></b>, the most secure Linux of the IoT realm</p>
-</div>
-</body></html>
+
+    <script>
+        //only a small amount of js to handle selected tabs
+        let h1 = document.querySelector('h1'); //fake page change by updating h1 text
+        
+        document.querySelectorAll('nav a').forEach(n => 
+            n.addEventListener("click", function(e) {
+                document.querySelector('nav a.selected').classList.remove('selected');
+                n.classList.add('selected');
+                //h1.innerText = n.innerText;
+                e.stopPropagation();
+                e.preventDefault();
+                return false;
+            })
+        );
+
+
+    </script>
+</body>
+</html>
