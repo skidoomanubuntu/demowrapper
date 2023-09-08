@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 import shutil, subprocess, os, requests, bz2, time
+from datetime import datetime
 
 # This updates files if necessary
 def updateFiles(version):
@@ -128,17 +129,21 @@ def generateUSNStats(dicts, filename, totals):
 	with open(filename, 'w') as htmlFile:
 		htmlFile.write('<table border="0" width="100%" padding="3" spacing="10">\n')
 		htmlFile.write('   <tr>\n')
-		htmlFile.write("       <th style='background-color: #111;' width='100%' colspan='6'><h2>USN on the system & fixes</h2></th>\n")
-		htmlFile.write('   </tr><tr>\n')
+		htmlFile.write("       <th style='background-color: #111;' width='100%'><h2>USN on the system & fixes</h2></th>\n")
+		htmlFile.write('   </tr><tr><td valign="top">\n')
+		htmlFile.write('      <div class="tableFixHead">')
+		htmlFile.write('      <table border="0" width="100%">')
+		htmlFile.write('<thead> <tr>')
 		htmlFile.write('      <th>Source</th><th>Critical</th><th>High</th><th>Medium</th><th>Low</th><th>Other</th>\n')
-		htmlFile.write('   </tr><tr>\n')
+		htmlFile.write('   </tr></thead><tbody><tr>\n')
 		htmlFile.write('      <td><b>Total</b></td>%s\n' % printResultLine(totals))
 		htmlFile.write('   </tr>\n')
 		for version in dicts.keys():
 			htmlFile.write('   <tr>\n')
 			htmlFile.write('      <td><b>%s</b></td>%s\n' % (version, printResultLine(dicts[version])))
 			htmlFile.write('   </tr>\n')
-		htmlFile.write('</table>')
+		htmlFile.write('</tbody></table></td></tr>')
+		htmlFile.write('<tr><td colspan="6" style="background-color: #111;" width="100%"><h3><center>Last updated on ' + datetime.now().strftime("%Y-%m-%d %H:%M") + '</center></h3></td></tr></table>' )
 
 '''# This takes an OCI PCK file and returns a dictionary as follows:
 # Package -> {{usn->[cve]}, component}
