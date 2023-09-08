@@ -11,7 +11,7 @@ body, html {
 
 body {
   /* The image used */
-  background-image: url('wallpaper.jpg');
+  background-image: url('wallpaper.png');
 
   /* Full height */
   height: 100%;
@@ -32,6 +32,10 @@ div.screen {
   <? if (file_exists('jp')) echo 'font-size: 30;'; else echo 'font-size: 40;';?>
   background-color: #300A24;
   overflow-y: hidden;
+}
+
+div.screen svg path {
+  fill: #ffffff;
 }
 
 div.internalscreen {
