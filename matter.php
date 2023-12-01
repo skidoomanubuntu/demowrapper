@@ -98,7 +98,6 @@ function processCommand(command)
 		}
 	};
 	request="http://"  + window.location.hostname + ":" + "5002/Performdevops?" +  "demoname=" + command;
-        alert(request);
 	xhttp.open("GET", request, true);
 	xhttp.send();
 }
@@ -121,16 +120,17 @@ function processCommand(command)
     <td>Bulb 1</td>
     <td><a href="#" onclick="processCommand('Bulb%201%20OFF')"><img src="./lightbulb_grey.svg" height="70"></a></td>
     <td><a href="#" onclick="processCommand('Bulb%201%20ON')"><img src="./lightbulb.svg" height="70"></a></td>
-    <td><img src="./lightbulb_red.svg" height="70"></td>
-    <td><img src="./lightbulb_green.svg" height="70"></td>
-    <td><img src="./lightbulb_blue.svg" height="70"></td>
-    <td><img src="./lightbulb_yellow.svg" height="70"></td>
-    <td><img src="./lightbulb_cyan.svg" height="70"></td>
-    <td><img src="./lightbulb_lilac.svg" height="70"></td>
-    <td><img src="./lightbulb_pink.svg" height="70"></td>
+    <td><a href="#" onclick="processCommand('Bulb%201%20Red')"><img src="./lightbulb_red.svg" height="70"></a></td>
+    <td><a href="#" onclick="processCommand('Bulb%201%20Green')"><img src="./lightbulb_green.svg" height="70"></a></td>
+    <td><a href="#" onclick="processCommand('Bulb%201%20Blue')"><img src="./lightbulb_blue.svg" height="70"></a></td>
+    <td><a href="#" onclick="processCommand('Bulb%201%20Yellow')"><img src="./lightbulb_yellow.svg" height="70"></a></td>
+    <td><a href="#" onclick="processCommand('Bulb%201%20Cyan')"><img src="./lightbulb_cyan.svg" height="70"></a></td>
+    <td><a href="#" onclick="processCommand('Bulb%201%20Lilac')"><img src="./lightbulb_lilac.svg" height="70"></a></td>
+    <td><a href="#" onclick="processCommand('Bulb%201%20Pink')"><img src="./lightbulb_pink.svg" height="70"></a></td>
    </tr><tr>
     <td>Plug </td>
-    <td><img src="./plug.svg" height="70"></td>
+    <td><a href="#" onclick="processCommand('Plug%20off')"><img src="./plug_off.svg" height="70"></td>
+    <td><a href="#" onclick="processCommand('Plug%20on')"><img src="./plug.svg" height="70"></td>
    </tr>
   </table>
   </td>
