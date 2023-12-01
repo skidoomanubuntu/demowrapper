@@ -9,6 +9,8 @@ body, html {
 }
 </style>
 
+<link rel="stylesheet" href="common.css">
+
 <body width="100%" height="100%">
   <video width="100%" height="100%" preload="auto" autoplay loop>
     <source src="rt_video.mp4" type="video/mp4">

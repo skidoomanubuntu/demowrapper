@@ -26,7 +26,7 @@
 //echo '<br><br>';
 $core = php_uname('m');
 if ($core == 'x86_64') echo '<img src="/intel.png" width="113">';
-if ($_SERVER['SERVER_NAME'] == 'advantech') echo '<img src="/Advantech_logo.svg" width="113">';
+if (gethostname() == 'advantech') echo '<img src="/Advantech_logo.svg" width="113">';
 if ($core == 'aarch64') echo '<img src="/Arm_logo_2017.svg" width="88">';
 echo '</b></font>';
 ?>
@@ -67,7 +67,8 @@ function repositionLogos(pos)
   if ((pos=='NW' || pos=='NE'))
   {
      element.style.top=0;
-     element.style.bottom = null;
+     element.style.bottom = element.clientHeigh + heightOffset + 'px';
+     //element.style.bottom = null;
      //element.style.bottom = heightOffset + 'px'; 
   } 
   if ((pos=='SW' || pos=='SE'))  

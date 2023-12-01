@@ -41,7 +41,8 @@ def updateFiles(version):
 	# oci.com.ubuntu.[version].usn.oval.xml
 	pkgFile = "oci.com.ubuntu.%s.pkg.oval.xml" % version
 	usnFile = "oci.com.ubuntu.%s.usn.oval.xml" % version
-	return (getFile(pkgFile) and getFile(usnFile)) 
+	cveFile = "com.ubuntu.%s.cve.oval.xml" % version
+	return (getFile(pkgFile) and getFile(usnFile) and getFile(cveFile))
 
 # Analyze the output from command
 # oscap oval eval --results report.xml oci.com.ubuntu.[version].usn.oval.xml
@@ -110,6 +111,19 @@ def getTotals(dicts):
 				total[usn] = dict[usn]
 	return total
 
+# This function takes a mapping of all the USNs we have and compiles unique dict of CVE 
+# Value indicates if the problem may still be present (true)
+def getCVETotalsFromUSNs(dict):
+	cves = {}
+	for usns in dict.values():
+		for usn in usns.keys():
+			for cve in usns[usn]['cve']:
+				if usns[usn]['result'] == 'true':
+					cves[cve] = True
+				elif cve not in cves.keys():
+					cves[cve] = False
+	return cves
+
 # This function generates an HTML report that is essentially a table
 # showing the vulnerabilities + fixed metrics
 def generateUSNStats(dicts, filename, totals):
@@ -145,6 +159,52 @@ def generateUSNStats(dicts, filename, totals):
 			htmlFile.write('   </tr>\n')
 		htmlFile.write('</tbody></table></td></tr>')
 		htmlFile.write('<tr><td colspan="6" style="background-color: #111;" width="100%"><h3><center>Last updated on ' + datetime.now().strftime("%Y-%m-%d %H:%M") + '</center></h3></td></tr></table>' )
+
+def analyzeCVEFile(filename, dict):
+	print ("Indexing CVEs in %s" % filename)
+	xmlFile = open(filename, 'r')
+	contents = xmlFile.read()
+	soup = BeautifulSoup(contents, 'xml')
+	definitions_meta = soup.find('definitions')
+	# For each definition
+	classes = []
+	definitions = definitions_meta.find_all("definition")
+	for definition in definitions:
+		if definition['class'] == 'vulnerability':
+			title = definition.find('title').text.split(' ')[0]
+			description = definition.find('description').text
+			severity = definition.find('severity').text
+			date = definition.find('public_date').text
+			dict[title] = {"title":title, "description":description, "severity": severity, "date": date}
+	return dict
+
+# This function takes a list of CVEs that are relevant, then looks them up in a dict
+# It then generates a table of CVEs that have been taken care of
+def generateCVEStats(relevant_cves, cve_info, filename):
+	with open(filename, 'w') as htmlFile:
+		htmlFile.write('<table border="0" width="100%" padding="3" spacing="10">\n')
+		htmlFile.write('   <tr>\n')
+		htmlFile.write("       <th style='background-color: #111;' width='100%'><h2><img src='security.svg' height='30'>&nbsp;&nbsp;USN on the system & fixes</h2></th>\n")
+		htmlFile.write('   </tr><tr><td valign="top">\n')
+		htmlFile.write('      <div class="tableFixHead">')
+		htmlFile.write('      <table border="0" width="100%">')
+		htmlFile.write('<thead> <tr>')
+		htmlFile.write('      <th>CVE</th><th>Severity</th><th>Date</th>\n')
+		htmlFile.write('   </tr></thead>\n')
+		htmlFile.write('   <tbody>\n')
+		for cve in relevant_cves:
+			try:
+				mickey = cve_info[cve]
+				htmlFile.write('   <tr>\n')
+				#print (cve_info[cve])
+				htmlFile.write('      <td><b>%s</b></td><td>%s</td><td>%s</td>\n' % (cve, cve_info[cve]['severity'], cve_info[cve]['date']))
+				htmlFile.write('   </tr>\n')
+			except Exception:
+				print ('skipped CVE %s' % cve)
+				pass
+		htmlFile.write('</tbody></table></td></tr>')
+		htmlFile.write('<tr><td colspan="6" style="background-color: #111;" width="100%"><h3><center>Last updated on ' + datetime.now().strftime("%Y-%m-%d %H:%M") + '</center></h3></td></tr></table>' )
+
 
 '''# This takes an OCI PCK file and returns a dictionary as follows:
 # Package -> {{usn->[cve]}, component}
@@ -317,6 +377,7 @@ def crossReferenceComponents(oscap, pkg):
 '''
 
 versions = {'core18':'bionic', 'core20':'focal', 'core22':'jammy', 'snapd':'xenial', 'pc-kernel': 'jammy'}
+cves = {}
 maps = {}
 results = {}
 components = {}
@@ -326,11 +387,15 @@ for version in versions.keys():
 		print ("Could not update files for version %s, analysis for this version will be skipped" % version)
 		continue
 
+	analyzeCVEFile("com.ubuntu.%s.cve.oval.xml" % versions[version], cves)
+	print (cves)
 	# First, make sure that the right manifest file gets copied as manifest
 	shutil.copy('manifest.%s' % version, 'manifest')
 	
 	# Run the oscap tool
 	subprocess.run(['oscap', 'oval', 'eval', '--results', 'report_%s.xml' % version, 'oci.com.ubuntu.%s.usn.oval.xml' % versions[version]])	
+
+	
 
 	# You should now have a report_[version].xml report to send for analysis
 	if os.path.exists('report_%s.xml' % version):
@@ -351,5 +416,19 @@ for version in versions.keys():
 # Generate totals
 totals = generateData(getTotals(maps))
 generateUSNStats(results, 'usn_stats.php', totals)
+
+# Generate CVE list
+relevant_cves = getCVETotalsFromUSNs(maps)
+
+# Keep only the CVes that are not present - trash all others
+final_list = []
+for entry in relevant_cves.keys():
+	if not relevant_cves[entry]:
+		final_list.append(entry)
+
+generateCVEStats(final_list, cves, "cve_stats.php")
+
+#print (maps)
+
 #for entry in components.keys():
 #	print ("%s: %s" % (entry, components[entry]))

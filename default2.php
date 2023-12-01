@@ -126,13 +126,13 @@ a:hover { color: orange;}
    if(endsWith(php_uname('m'), 'x86_64'))
    {
       echo "<img src='intel.png' width='113'>";
-      if($_SERVER['SERVER_NAME'] == 'advantech') echo '<img src="/Advantech_logo.svg" width="113">';
+      if(gethostname() == 'advantech') echo '<img src="/Advantech_logo.svg" width="113">';
    }
   ?>
 
   </td></tr>
-  <tr><td valign='top'><h3><script>translate('Name')</script></h3></td><td>&nbsp;&nbsp;</td><td valign='top'><h3><?php echo $_SERVER['SERVER_NAME'];?></h3></td><td></td></tr>
-  <tr><td valign='top'><h3><script>translate('IP')</script></h3></td><td>&nbsp;&nbsp;</td><td valign='top'><h3><?php echo $_SERVER['SERVER_ADDR']; ?></h3></td><td></td></tr>
+  <tr><td valign='top'><h3><script>translate('Name')</script></h3></td><td>&nbsp;&nbsp;</td><td valign='top'><h3><?php echo gethostname();?></h3></td><td></td></tr>
+  <tr><td valign='top'><h3><script>translate('IP')</script></h3></td><td>&nbsp;&nbsp;</td><td valign='top'><h3><?php echo gethostbyname(gethostname()); ?></h3></td><td></td></tr>
   </table>
 </td>
 
@@ -143,7 +143,16 @@ a:hover { color: orange;}
 <font color='#FFFFFF'>
 <h1><script>translate('Welcome to Canonical')</script></h1>
 </font>
-</font>
+
+<div class='screen' style="max-height: 60vh;">
+<?php
+  $result=file_get_contents('http://' . $_SERVER['SERVER_ADDR'] . ':4042');
+  $html=file_get_contents('http://' . $_SERVER['SERVER_ADDR'] . ':4042/cve');
+  echo $html;
+?>
+</div>
+
+
 </td>
 </tr>
 <tr><td></td><td></td><td></td></tr>
@@ -228,7 +237,8 @@ a:hover { color: orange;}
 
 <div class='screen' style="max-height: 60vh;">
 <?php
-  if (file_exists('usn_stats.php')) include 'usn_stats.php'; 
+  $html=file_get_contents('http://' . $_SERVER['SERVER_ADDR'] . ':4042/usn');
+  echo $html;
 ?>
 </div>
 

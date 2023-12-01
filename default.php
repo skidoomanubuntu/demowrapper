@@ -33,7 +33,7 @@ body {
 div.screen {
   color: white;
   font-weight: normal;
-  <? if (file_exists('jp')) echo 'font-size: 48;'; else echo 'font-size: 64;';?>
+  font-size: 64;
   background-color: #300A24;
 }
 
@@ -94,8 +94,7 @@ a:hover { color: orange;}
 </h2>
 </td>
 
-<? if (file_exists('jp')) echo '<td width="10%">'; else echo '<td width="40%">';?>
-</td>
+<td width="40%">&nbsp;</td>
 
 
 

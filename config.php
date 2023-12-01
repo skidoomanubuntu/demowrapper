@@ -56,7 +56,7 @@
           <td>
             
           </td>
-          <td><h3>Interval</h3>
+          <td>
           </td>
        </tr>
     </table>
