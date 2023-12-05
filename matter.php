@@ -105,9 +105,13 @@ function processCommand(command)
 var frequency = 4000; // Change colors every four seconds
 var validColors = ['Red', 'Green', 'Blue', 'Yellow', 'Cyan', 'Lilac', 'Pink'];
 var intensity = ['', 'Half'];
-var numberOfBulbs = 1;
+var numberOfBulbs = 2;
 var duration = 60000;
 //var duration = 20000;
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 function getRandomInt(max){
    return Math.floor(Math.random() * (max));
@@ -141,17 +145,22 @@ function goDiscoDingoGo()
            console.log(command);
            processCommand(command);
            currentColor[i] = seed;
-           
         }
 
     }, frequency);
     setTimeout(function() {
         clearInterval(intervalID);
-        processCommand('Plug%20off');
-        for (var i = 0; i < numberOfBulbs; i++){
-            var plugNumber = i + 1;
-            processCommand('Bulb%20' + plugNumber + '%20OFF');
-        }
+        // Give the previous commands a chance to be processed, say same amount of time as frequency
+        sleep(frequency).then(() => {
+          console.log('proceeding to shut down');
+          sleep(1000).then(()=>{processCommand('Plug%20off');  console.log('Plug shut down');});
+
+          for (var i = 0; i < numberOfBulbs; i++){
+              var plugNumber = i + 1;
+              var timeToWait = 2000 + (i*1000);
+              sleep(1000).then(() => {processCommand('Bulb%20' + plugNumber + '%20OFF'); console.log('plug ' + plugNumber + ' shut down');});
+          }
+       });
     }, duration);
 }
 </script>
@@ -169,9 +178,10 @@ function goDiscoDingoGo()
 <tr>
   <td valign="top">
   <table border="0">
+   <tr><td colspan="9"><font size="36">Bulb 1</font></td></tr>
    <tr>
     <td><a href="#" onclick="processCommand('Bulb%201%20OFF')"><img src="./lightbulb_grey.svg" height="70"></a></td>
-    <td><a href="#" onclick="processCommand('Bulb%201%20ON')"><img src="./lightbulb.svg" height="70"></a></td>
+    <td><a href="#" onclick="processCommand('Bulb%201%20White')"><img src="./lightbulb.svg" height="70"></a></td>
     <td><a href="#" onclick="processCommand('Bulb%201%20Red')"><img src="./lightbulb_red.svg" height="70"></a></td>
     <td><a href="#" onclick="processCommand('Bulb%201%20Green')"><img src="./lightbulb_green.svg" height="70"></a></td>
     <td><a href="#" onclick="processCommand('Bulb%201%20Blue')"><img src="./lightbulb_blue.svg" height="70"></a></td>
@@ -179,7 +189,23 @@ function goDiscoDingoGo()
     <td><a href="#" onclick="processCommand('Bulb%201%20Cyan')"><img src="./lightbulb_cyan.svg" height="70"></a></td>
     <td><a href="#" onclick="processCommand('Bulb%201%20Lilac')"><img src="./lightbulb_lilac.svg" height="70"></a></td>
     <td><a href="#" onclick="processCommand('Bulb%201%20Pink')"><img src="./lightbulb_pink.svg" height="70"></a></td>
-   </tr><tr>
+   </tr>
+   <tr><td colspan="9"><font size="36">Bulb 2</font></td></tr>
+   <tr>
+    <td><a href="#" onclick="processCommand('Bulb%202%20OFF')"><img src="./lightbulb_grey.svg" height="70"></a></td>
+    <td><a href="#" onclick="processCommand('Bulb%202%20White')"><img src="./lightbulb.svg" height="70"></a></td>
+    <td><a href="#" onclick="processCommand('Bulb%202%20Red')"><img src="./lightbulb_red.svg" height="70"></a></td>
+    <td><a href="#" onclick="processCommand('Bulb%202%20Green')"><img src="./lightbulb_green.svg" height="70"></a></td>
+    <td><a href="#" onclick="processCommand('Bulb%202%20Blue')"><img src="./lightbulb_blue.svg" height="70"></a></td>
+    <td><a href="#" onclick="processCommand('Bulb%202%20Yellow')"><img src="./lightbulb_yellow.svg" height="70"></a></td>
+    <td><a href="#" onclick="processCommand('Bulb%202%20Cyan')"><img src="./lightbulb_cyan.svg" height="70"></a></td>
+    <td><a href="#" onclick="processCommand('Bulb%202%20Lilac')"><img src="./lightbulb_lilac.svg" height="70"></a></td>
+    <td><a href="#" onclick="processCommand('Bulb%202%20Pink')"><img src="./lightbulb_pink.svg" height="70"></a></td>
+   </tr>
+   <tr>
+    <td colspan="9"><font size="36">Plug 1</font></td>
+   </tr>
+   <tr>
     <td><a href="#" onclick="processCommand('Plug%20off')"><img src="./plug_off.svg" height="70"></td>
     <td><a href="#" onclick="processCommand('Plug%20on')"><img src="./plug.svg" height="70"></td>
    </tr>
@@ -189,7 +215,9 @@ function goDiscoDingoGo()
   <td valign="top">
     <a href="#" onclick="goDiscoDingoGo()"><img src="./disco_dingo.jpg" width="500"></a>
     <font size="36"><center><p>GO DISCO DINGO GO!</p>
-    <p><i>Press the image to start</i></p></center></font>
+    <p><i>Press the image to start</i></p>
+    <p><a href="#" onclick="processCommand('Plug%20off');processCommand('Bulb%201%20OFF');processCommand('Bulb%202%20OFF');">RESET!</p>
+    </center></font>
   </td>
 </tr></table>
 </body>
