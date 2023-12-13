@@ -97,10 +97,32 @@ function processCommand(command)
 			let str = responseTxt.PerformdevOpsRes;
 		}
 	};
-	request="http://"  + window.location.hostname + ":" + "5002/Performdevops?" +  "demoname=" + command;
+	//request="http://"  + window.location.hostname + ":" + "5002/Performdevops?" +  "demoname=" + command;
+        request = "http://<?php echo gethostbyname(gethostname()); ?>:5002/Performdevops?demoname=" + command;
 	xhttp.open("GET", request, true);
 	xhttp.send();
 }
+
+function sendGet(url)
+{
+  try{
+     //command = "http://192.168.8.199:5002/Performdevops?demoname=Bulb%201%20OFF
+     var xhttp = new XMLHttpRequest();
+     xhttp.onreadystatechange = function() {
+                if (xhttp.readyState == 4 && xhttp.status == 200) {
+                        var responseTxt = JSON.parse(xhttp.responseText);
+                        let str = responseTxt.PerformdevOpsRes;
+                }
+        };
+        xhttp.open("GET", url, true);
+        xhttp.send();
+     }
+  catch(error){}
+}
+
+
+var soundServerURLStart = 'http://jukebox:5000/jukebox?command=start'
+var soundServerURLStop = 'http://jukebox:5000/jukebox?command=stop'
 
 var frequency = 4000; // Change colors every four seconds
 var validColors = ['Red', 'Green', 'Blue', 'Yellow', 'Cyan', 'Lilac', 'Pink'];
@@ -108,6 +130,9 @@ var intensity = ['', 'Half'];
 var numberOfBulbs = 2;
 var duration = 60000;
 //var duration = 20000;
+
+function turnMusicOn() { sendGet(soundServerURLStart); }
+function turnMusicOff() { sendGet(soundServerURLStop); }
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -123,6 +148,8 @@ function goDiscoDingoGo()
    processCommand('Plug%20on');
    var currentColor = Array(2);
    console.log(currentColor);
+   sendGet(soundServerURLStart);
+   
 
    var intervalID = setInterval(function() {
         for (var i = 0; i < numberOfBulbs;  i++)
@@ -153,6 +180,7 @@ function goDiscoDingoGo()
         // Give the previous commands a chance to be processed, say same amount of time as frequency
         sleep(frequency).then(() => {
           console.log('proceeding to shut down');
+          sendGet(soundServerURLStop);
           sleep(1000).then(()=>{processCommand('Plug%20off');  console.log('Plug shut down');});
 
           for (var i = 0; i < numberOfBulbs; i++){
@@ -161,6 +189,24 @@ function goDiscoDingoGo()
               sleep(1000).then(() => {processCommand('Bulb%20' + plugNumber + '%20OFF'); console.log('plug ' + plugNumber + ' shut down');});
           }
        });
+    }, duration);
+}
+
+function goDiscoDingoGoPrashant()
+{
+   // turn the disco ball on
+   processCommand('Plug%20on');
+   var currentColor = Array(2);
+   console.log(currentColor);
+   sendGet(soundServerURLStart);
+   
+
+   var intervalID = setInterval(function() {
+        processCommand('discoON'); // discoON needs to be turning on the light in a random color, each of the lights a different random
+    }, frequency);
+    setTimeout(function() {
+        clearInterval(intervalID);
+        processCommand('discoOFF'); // discoOFF needs to be turning off the plug too
     }, duration);
 }
 </script>
@@ -178,7 +224,7 @@ function goDiscoDingoGo()
 <tr>
   <td valign="top">
   <table border="0">
-   <tr><td colspan="9"><font size="36">Bulb 1</font></td></tr>
+   <tr><td colspan="9"><h2>Bulb 1</h2></td></tr>
    <tr>
     <td><a href="#" onclick="processCommand('Bulb%201%20OFF')"><img src="./lightbulb_grey.svg" height="70"></a></td>
     <td><a href="#" onclick="processCommand('Bulb%201%20White')"><img src="./lightbulb.svg" height="70"></a></td>
@@ -190,7 +236,7 @@ function goDiscoDingoGo()
     <td><a href="#" onclick="processCommand('Bulb%201%20Lilac')"><img src="./lightbulb_lilac.svg" height="70"></a></td>
     <td><a href="#" onclick="processCommand('Bulb%201%20Pink')"><img src="./lightbulb_pink.svg" height="70"></a></td>
    </tr>
-   <tr><td colspan="9"><font size="36">Bulb 2</font></td></tr>
+   <tr><td colspan="9"><h2>Bulb 2</h2></td></tr>
    <tr>
     <td><a href="#" onclick="processCommand('Bulb%202%20OFF')"><img src="./lightbulb_grey.svg" height="70"></a></td>
     <td><a href="#" onclick="processCommand('Bulb%202%20White')"><img src="./lightbulb.svg" height="70"></a></td>
@@ -203,21 +249,24 @@ function goDiscoDingoGo()
     <td><a href="#" onclick="processCommand('Bulb%202%20Pink')"><img src="./lightbulb_pink.svg" height="70"></a></td>
    </tr>
    <tr>
-    <td colspan="9"><font size="36">Plug 1</font></td>
+    <td colspan="9"><h2>Plug 1</h2></td>
    </tr>
    <tr>
     <td><a href="#" onclick="processCommand('Plug%20off')"><img src="./plug_off.svg" height="70"></td>
     <td><a href="#" onclick="processCommand('Plug%20on')"><img src="./plug.svg" height="70"></td>
+   </tr>
+   <tr>
+    <td colspan="9"><h2>Sound <a href="#" onclick="turnMusicOn()">ON</a> or <a href="#" onclick="turnMusicOff()">OFF</a></h2></td>
    </tr>
   </table>
   </td>
   <td width="50%"></td>
   <td valign="top">
     <a href="#" onclick="goDiscoDingoGo()"><img src="./disco_dingo.jpg" width="500"></a>
-    <font size="36"><center><p>GO DISCO DINGO GO!</p>
+    <h2><center><p>GO DISCO DINGO GO!</p>
     <p><i>Press the image to start</i></p>
     <p><a href="#" onclick="processCommand('Plug%20off');processCommand('Bulb%201%20OFF');processCommand('Bulb%202%20OFF');">RESET!</p>
-    </center></font>
+    </center></h2>
   </td>
 </tr></table>
 </body>
