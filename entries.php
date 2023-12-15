@@ -38,6 +38,9 @@
       },
 
    // Code update demo
+   // VERSIONS:
+   // Select port 4000 for Bugra's version, which depends on an Internet connection
+   // Select port 4001 for Steve's static version, which does not depend on an Internet connection
       {'name': translate_direct('Update'),
        'url': window.location.protocol + '//' + window.location.hostname + ':4001',
        'caption': 'By <b>Bugra Aydogar <i>(@bugraaydogar)</i></b><br><i>Master Linux plumber</i>',
