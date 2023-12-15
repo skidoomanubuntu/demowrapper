@@ -192,22 +192,49 @@ function goDiscoDingoGo()
     }, duration);
 }
 
+var newInterval = 0;
+var intervalID = 0;
+
 function goDiscoDingoGoPrashant()
 {
    // turn the disco ball on
-   processCommand('Plug%20on');
+   processCommand('AllOn');
    var currentColor = Array(2);
    console.log(currentColor);
    sendGet(soundServerURLStart);
    
+   setTimeout(function() {
+	   intervalID = setInterval(function() {
+	        processCommand('DiscoOn'); // discoON needs to be turning on the light in a random color, each of the lights a different random
+	    }, frequency);
+	    setTimeout(function() {
+	        newInterval = setInterval(function() {
+	        	clearInterval(intervalID);
+	        	sendGet(soundServerURLStop);
+	        	processCommand('AllOff'); // discoOFF needs to be turning off the plug too
+	        }, frequency);
+                setTimeout(function () {
+			clearInterval(newInterval);
+		}, frequency*2);	        
+	        
+	    }, duration);
+    }, frequency*2);
+}
 
-   var intervalID = setInterval(function() {
-        processCommand('discoON'); // discoON needs to be turning on the light in a random color, each of the lights a different random
-    }, frequency);
-    setTimeout(function() {
-        clearInterval(intervalID);
-        processCommand('discoOFF'); // discoOFF needs to be turning off the plug too
-    }, duration);
+function shutdown()
+{
+  	if (newInterval) clearInterval(newInterval);
+
+	newInterval = setInterval(function() {
+		clearInterval(intervalID);
+		sendGet(soundServerURLStop);
+		processCommand('AllOff'); // discoOFF needs to be turning off the plug too
+	}, frequency);
+	setTimeout(function () {
+		clearInterval(newInterval);
+	}, frequency*2);
+
+
 }
 </script>
 <body>
@@ -262,10 +289,10 @@ function goDiscoDingoGoPrashant()
   </td>
   <td width="50%"></td>
   <td valign="top">
-    <a href="#" onclick="goDiscoDingoGo()"><img src="./disco_dingo.jpg" width="500"></a>
+    <a href="#" onclick="goDiscoDingoGoPrashant()"><img src="./disco_dingo.jpg" width="500"></a>
     <h2><center><p>GO DISCO DINGO GO!</p>
     <p><i>Press the image to start</i></p>
-    <p><a href="#" onclick="processCommand('Plug%20off');processCommand('Bulb%201%20OFF');processCommand('Bulb%202%20OFF');">RESET!</p>
+    <p><a href="#" onclick="shutdown();">EMERGENCY SHUTDOWN!</p>
     </center></h2>
   </td>
 </tr></table>
