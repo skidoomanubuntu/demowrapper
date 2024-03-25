@@ -5,5 +5,5 @@
 	$myfile = fopen('jp','w') or die ('unable to switch language mode');
 	fwrite($myfile, 'Japanese');
 	fclose($myfile);
-	header("Location: index2.php");
+	header("Location: index.php");
 ?>

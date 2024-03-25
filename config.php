@@ -35,11 +35,12 @@
           </td>
           <td width="20%"></td>
           <td>
-             <select name="interval" id="interval">
-                <option value="36000">1 minute</option>
-             </select>
+            <label class="switch">
+                <input type="checkbox" id='offline_checkbox'>
+                <span class="slider round"></span>
+             </label>
           </td>
-          <td><h3>Interval</h3>
+          <td><h3>Offline demos</h3>
           </td>
        </tr>
 
@@ -54,9 +55,11 @@
           </td>
           <td width="20%"></td>
           <td>
-            
+             <select name="interval" id="interval">
+                <option value="36000">1 minute</option>
+             </select>
           </td>
-          <td>
+          <td><h3>Interval</h3>
           </td>
        </tr>
     </table>
@@ -77,6 +80,7 @@ const logos_checkbox = document.getElementById('logo_checkbox');
 const recognition_checkbox = document.getElementById('recognition_checkbox');
 const rotate_checkbox = document.getElementById('rotate_checkbox');
 const language_select = document.getElementById('language');
+const offline_checkbox = document.getElementById('offline_checkbox');
 
 // Event handlers
 // When logos need to be shown or removed
@@ -111,6 +115,11 @@ language_select.addEventListener('change', (event) => {
   window.location.href = 'language2_' + language.value + '.php';
 });
 
+// Should a particular demo be offline?
+offline_checkbox.addEventListener('change', (event) => {
+  window.location.href = 'offline.php';
+});
+
 // Set default language
 var mySelect = document.getElementById('language');
 function initialize_language(){
@@ -123,6 +132,12 @@ function initialize_language(){
 	 break;
 	 }
    }
+   // While at it, also set the offline mode
+   var offline = <? if (file_exists('offline')) echo 'true'; else echo 'false'; ?>;
+   if (offline) offline_checkbox.checked = 'true';
 }
+
+
+
 
 </script>

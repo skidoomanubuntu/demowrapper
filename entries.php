@@ -41,8 +41,9 @@
    // VERSIONS:
    // Select port 4000 for Bugra's version, which depends on an Internet connection
    // Select port 4001 for Steve's static version, which does not depend on an Internet connection
+   // This is now being handled by update.php
       {'name': translate_direct('Update'),
-       'url': window.location.protocol + '//' + window.location.hostname + ':4001',
+       'url': window.location.protocol + '//' + window.location.hostname + '/update.php',
        'caption': 'By <b>Bugra Aydogar <i>(@bugraaydogar)</i></b><br><i>Master Linux plumber</i>',
        'image': '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M8.74942 9.13447L8.75 1.6084H7.25L7.24942 9.13447L4.1993 6.083L3.31542 6.96689L8 11.6515L12.6846 6.96689L11.8007 6.083L8.74942 9.13447ZM2.5 12V10.9482H1V12C1 13.6568 2.34315 15 4 15H12C13.6569 15 15 13.6568 15 12V10.9482H13.5V12L13.4931 12.1444C13.4204 12.9051 12.7797 13.5 12 13.5H4L3.85554 13.4931C3.09489 13.4204 2.5 12.7797 2.5 12Z"/></svg>', 
        'logo':'SE', 'recognition':'S', 'snap':'device-controller'

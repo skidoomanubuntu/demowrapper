@@ -4,5 +4,5 @@
 ?>
 <?php
 	// No need to set any files
-	header("Location: index2.php");
+	header("Location: index.php");
 ?>
